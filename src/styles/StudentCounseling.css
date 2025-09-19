@@ -1,0 +1,349 @@
+/* 🎨 Theme Variables */
+:root {
+  --primary: #2ecc71;
+  --primary-dark: #27ae60;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --text-dark: #222;
+  --text-light: #555;
+  --bg-light: #f7f7f7;
+  --white: #fff;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/*  Layout */
+.counseling-page {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-light);
+  padding: 20px;
+}
+
+.counseling-main {
+  flex: 1;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: var(--text-dark);
+}
+
+/* Stats  */
+.stats-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 140px;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: 0.2s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.stat-box h3 {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: var(--text-light);
+}
+
+.stat-box p {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+/*  Progress  */
+.progress-section {
+  margin-bottom: 20px;
+}
+
+.progress-section p {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: var(--text-light);
+}
+
+.progress-bar {
+  background: #e0e0e0;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+  transition: width 0.4s ease;
+}
+
+/*  Table  */
+.table-container {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.table-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+/* ✅ Search Box */
+.search-box {
+  position: relative;
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 35px 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: var(--white);
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 6px rgba(46, 204, 113, 0.4);
+}
+
+🔍 Icon inside input
+.search-box::after {
+  content: "🔍";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--text-light);
+  pointer-events: none;
+}
+
+/* Student Table  */
+.table-scroll {
+  max-height: 320px;
+  overflow-y: auto;
+  border-radius: 6px;
+}
+
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.student-table th,
+.student-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.student-table th {
+  background: #f9f9f9;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Status Badges*/
+.status {
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-weight: 500;
+  display: inline-block;
+  transition: 0.2s ease;
+}
+
+.status.done {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.overdue {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status.done:hover,
+.status.pending:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.no-data {
+  text-align: center;
+  padding: 15px;
+  color: var(--danger);
+  font-weight: bold;
+}
+
+/* ✅ Remark Input Styling */
+.remark-input {
+  width: 90%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.remark-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 5px rgba(46, 204, 113, 0.4);
+}
+
+/* ✅ Remark Button */
+.remark-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.remark-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* ✅ Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: var(--shadow);
+  animation: popIn 0.3s ease;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ✅ Remarks History */
+.remark-history {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 12px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.remark-history li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  background: #f9f9f9;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border-left: 4px solid var(--primary);
+}
+
+.remark-history strong {
+  color: var(--primary-dark);
+}
+
+.no-remarks {
+  font-size: 14px;
+  color: gray;
+  text-align: center;
+}
+
+/* ✅ Input inside Modal */
+.remark-input-box {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.remark-input-box input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.remark-input-box button {
+  padding: 6px 10px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ✅ Close Button */
+.close-btn {
+  background: #e74c3c;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+}
+
+/*Responsive */
+@media (max-width: 768px) {
+  .stats-bar {
+    flex-direction: column;
+  }
+  .search-box {
+    width: 100%;
+  }
+}

@@ -1,0 +1,114 @@
+/* 
+   Main Page Layout
+    */
+.student-page-main {
+  flex: 1;
+  padding: 30px;
+  background: #f5f6fa;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+}
+
+/*
+   Header Section
+    */
+.student-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 35px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.student-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1c1c1c;
+  margin-bottom: 6px;
+}
+
+.college-name {
+  font-size: 15px;
+  color: #666;
+}
+
+.college-name span {
+  font-weight: 600;
+  color: #222;
+}
+
+/* 
+   Search Bar
+   */
+.search-container {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 6px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease-in-out;
+}
+
+.search-container:focus-within {
+  border-color: #007bff;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding: 8px 10px;
+  width: 240px;
+  background: transparent;
+  color: #333;
+}
+
+.search-input::placeholder {
+  color: #aaa;
+}
+
+.search-icon {
+  margin-left: 8px;
+  font-size: 16px;
+  color: #888;
+}
+
+/* 
+   Grid for Cards
+    */
+.student-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 26px;
+  align-items: stretch;
+}
+
+/*
+   Card Wrapper (Clickable)
+   */
+.student-card-wrapper {
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-radius: 12px;
+}
+
+.student-card-wrapper:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 
+   No Results State
+   */
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #777;
+  font-size: 16px;
+  margin-top: 50px;
+  font-style: italic;
+}
