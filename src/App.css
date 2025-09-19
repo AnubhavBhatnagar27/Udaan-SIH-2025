@@ -351,8 +351,8 @@
 }
 
 .risk-circle.red { background: #ef4444; color: #fff; }
-.risk-circle.blue { background: #3b82f6; color: #fff; }
-.risk-circle.yellow { background: #f59e0b; color: #fff; }
+.risk-circle.blue { background: #f59e0b; color: #fff; }
+.risk-circle.yellow { background: green; color: #fff; }
 
 .risk-level {
   margin-top: 1rem;
@@ -483,8 +483,8 @@ td {
 }
 
 .badge-high { background: #ef4444; }
-.badge-medium { background: #3b82f6; }
-.badge-low { background: #f59e0b; }
+.badge-medium { background: #f59e0b; }
+.badge-low { background: green; }
 .badge-safe { background: #22c55e; }
 
 /* ================== Animations ================== */

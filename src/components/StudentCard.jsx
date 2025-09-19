@@ -13,7 +13,18 @@ export default function StudentCard({ student }) {
           <p><strong>Enrollment No.:</strong> {student.enrollment}</p>
           <p>
             <strong>Risk:</strong>{" "}
-            <span className="risk-badge">{student.risk}</span>
+            <span
+              className={`risk-badge ${
+                student.risk === "High Risk"
+                  ? "risk-high"
+                  : student.risk === "Medium Risk"
+                  ? "risk-medium"
+                  : "risk-low"
+              }`}
+            >
+              {student.risk}
+            </span>
+            {/* <span className="risk-badge">{student.risk}</span> */}
           </p>
         </div>
       </div>

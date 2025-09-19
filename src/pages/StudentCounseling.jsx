@@ -11,7 +11,7 @@ export default function StudentCounseling() {
       date: "01/11/2023",
       status: "Done",
       remarks: [
-        { text: "Good progress", date: "01/11/2023, 10:30 AM", counselor: "Prof. Sharma" },
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
       ],
     },
     {
@@ -20,7 +20,7 @@ export default function StudentCounseling() {
       date: "02/11/2023",
       status: "Pending",
       remarks: [
-        { text: "Needs follow-up", date: "02/11/2023, 11:15 AM", counselor: "Prof. Sharma" },
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
       ],
     },
     {
@@ -29,12 +29,12 @@ export default function StudentCounseling() {
       date: "05/11/2023",
       status: "Overdue",
       remarks: [
-        { text: "Did not attend", date: "05/11/2023, 09:00 AM", counselor: "Prof. Sharma" },
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
       ],
     },
     {
-      name: "Swati Gupta",
-      enrollment: "0105CD231031",
+      name: "Umesh Farkade",
+      enrollment: "0105AL231216",
       date: "06/11/2023",
       status: "Done",
       remarks: [
@@ -42,12 +42,79 @@ export default function StudentCounseling() {
       ],
     },
     {
-      name: "Umesh Patel",
-      enrollment: "0105CD231041",
+      name: "Kannat Pawar",
+      enrollment: "0105EC211225",
       date: "07/11/2023",
-      status: "Pending",
-      remarks: [],
+      status: "Overdue",
+      remarks: [
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
+      ],
     },
+    {
+      name: "Sneha Bhargav",
+      enrollment: "0105AL213200",
+      date: "12/11/2023",
+      status: "Pending",
+      remarks: [
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
+      ],
+    },
+    {
+      name: "Kunal Rai",
+      enrollment: "0105CB211015",
+      date: "13/11/2023",
+      status: "Done",
+      remarks: [
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
+      ],
+    },
+    {
+      name: "Pankaj Choudhary",
+      enrollment: "0105ITR211015",
+      date: "13/11/2023",
+      status: "Done",
+      remarks: [
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
+      ],
+    },
+    {
+      name: "Aarav Sharma",
+      enrollment: "0105IT211015",
+      date: "14/11/2023",
+      status: "Pending",
+      remarks: [
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
+      ],
+    },
+    {
+      name: "Neha Sharma",
+      enrollment: "0105EC211015",
+      date: "15/11/2023",
+      status: "Overdue",
+      remarks: [
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
+      ],
+    },
+    {
+      name: "Priya Kumari",
+      enrollment: "0105EC211015",
+      date: "16/11/2023",
+      status: "Done",
+      remarks: [
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
+      ],
+    },
+    {
+      name: "Khayti Pawar",
+      enrollment: "0105AL211015",
+      date: "16/11/2023",
+      status: "Overdue",
+      remarks: [
+        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
+      ],
+    },
+
+    
   ]);
 
   const [selectedStudent, setSelectedStudent] = useState(null);
