@@ -365,10 +365,18 @@ function StudentTable() {
   const [search, setSearch] = useState("");
 
   const students = [
-    { name: "RAHUL", risk: "HIGH", daysIn: 10 },
-    { name: "UMESH", risk: "HIGH", daysIn: 12 },
-    { name: "SNEHA", risk: "MEDIUM", daysIn: 7 },
-    { name: "SWATI", risk: "LOW", daysIn: 3 },
+    { name: "Aadarsh Thakur", risk: "High", daysIn: 10 },
+    { name: "Rahul Sharma", risk: "Medium", daysIn: 6 },
+    { name: "Sneha Verma", risk: "Low", daysIn: 4 },
+    { name: "Umesh Farkade", risk: "High", daysIn: 15 },
+    { name: "Kannat Pawar", risk: "Low", daysIn: 1 },
+    { name: "Sneha Bhargav", risk: "Medium", daysIn: 8 },
+    { name: "Kunal Rai", risk: "High", daysIn: 12 },
+    { name: "Pankaj Choudhary", risk: "High", daysIn: 14 },
+    { name: "Aarav Sharma", risk: "Medium", daysIn: 6 },
+    { name: "Neha Sharma", risk: "Low", daysIn: 4 },
+    { name: "Priya Kumari", risk: "High", daysIn: 13 },
+    { name: "Khayti Pawar", risk: "Low", daysIn: 3 },
   ];
 
   const filtered = students.filter((s) =>
