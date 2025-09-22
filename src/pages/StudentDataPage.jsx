@@ -13,27 +13,41 @@ export default function StudentDataPage() {
 
   // Fetch students from backend on component mount
     useEffect(() => {
-      Promise.all([
-        fetch("http://localhost:8000/api/students/").then((res) => {
-          if (!res.ok) throw new Error("Failed to fetch students");
-          return res.json();
-        }),
-        fetch("http://localhost:8000/api/mentors/").then((res) => {
-          if (!res.ok) throw new Error("Failed to fetch mentor data");
-          return res.json();
-        }),
-      ])
-        .then(([studentsData, mentorData]) => {
-          console.log("Mentor data:", mentorData);
+      const fetchData = async () => {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          setError("No access token found. Please login.");
+          setLoading(false);
+          return;
+        }
+        try {
+          const [studentsRes, mentorRes] = await Promise.all([
+            fetch("http://localhost:8000/api/students/", {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch("http://localhost:8000/api/mentors/", {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
+
+          if (!studentsRes.ok) throw new Error("Failed to fetch students");
+          if (!mentorRes.ok) throw new Error("Failed to fetch mentor data");
+
+          const studentsData = await studentsRes.json();
+          const mentorData = await mentorRes.json();
+
           setStudents(studentsData);
           setInstitute(mentorData.institute || "Institute Name Not Available");
+        } catch (error) {
+          setError(error.message);
+        } finally {
           setLoading(false);
-        })
-        .catch((err) => {
-          setError(err.message);
-          setLoading(false);
-        });
+        }
+      };
+
+      fetchData();
     }, []);
+
 
 
 

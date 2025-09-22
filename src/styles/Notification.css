@@ -1,0 +1,217 @@
+/* ✅ Global Fix – Page ko scroll hone se roko */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* overflow: hidden; 🔥 Poore page me scroll disable */
+  font-family: Arial, sans-serif;
+}
+
+/* ✅ Main Container – Full Screen + Center Content */
+.notification-container {
+  background: #f5f6f8;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;        /* 🔥 Fixed full screen height */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;     /* Extra scroll avoid */
+}
+
+/* Page Title */
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+/* Stats Section (Top Cards) */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-shrink: 0; /* ✅ Hamesha visible rahe */
+}
+
+.stat-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.stat-label {
+  color: #6b7280;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #111827;
+}
+
+.stat-value.completed {
+  color: #16a34a;
+}
+
+.stat-value.pending {
+  color: #f59e0b;
+}
+
+/* Progress Card */
+.progress-card {
+  background: #fff;
+  padding: 12px 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  flex-shrink: 0; /* ✅ Fixed position feel */
+}
+
+.progress-label {
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 5px;
+}
+
+.progress-bar {
+  background: #e5e7eb;
+  height: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: #22c55e;
+  height: 100%;
+  border-radius: 8px;
+}
+
+/* Table Header (Title + Search) */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 5px;
+  flex-shrink: 0;
+}
+
+.table-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Search Bar */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 10px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 230px;
+}
+
+.search-icon {
+  color: #9ca3af;
+  margin-right: 8px;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+}
+
+/* ✅ Table Wrapper – Sirf yaha scroll hoga */
+.table-wrapper {
+  flex: 1;                /* ✅ Bachi hui height le lo */
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 0;
+  margin-top: 10px;
+  overflow-y: auto;       /* ✅ Scroll only y-axis */
+  overflow-x: hidden;     /* No horizontal scroll */
+}
+
+/* Scrollbar styles */
+.table-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Table */
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  table-layout: fixed;   /* Fixed layout to prevent horizontal overflow */
+}
+
+/* Header Row */
+.student-table thead {
+  background-color: #f1f5f9;
+}
+
+.student-table th {
+  font-weight: 600;
+  color: #374151;
+  padding: 14px 20px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+ 
+}
+
+
+
+/* Data Rows */
+.student-table td {
+  /* padding: 14px 20px; */
+  border-bottom: 1px solid #e5e7eb;
+  color: #1f2937;
+  white-space: normal;         /* Allow wrapping */
+  vertical-align: top;         /* Align content at the top */
+  overflow-wrap: break-word;   /* Break long words */
+  text-overflow: ellipsis;
+}
+
+/* Right-align specific columns (Notification Date & Recipient Number) */
+.student-table th:nth-child(3),
+.student-table td:nth-child(3),
+.student-table th:nth-child(4),
+.student-table td:nth-child(4) {
+  text-align: right;
+}
+
+/* Center align status column */
+.student-table th:nth-child(5),
+.student-table td:nth-child(5) {
+  text-align: center;
+}
+
+/* Remove border from last row */
+.student-table tr:last-child td {
+  border-bottom: none;
+}

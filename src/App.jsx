@@ -8,6 +8,7 @@ import StudentCounseling from './pages/StudentCounseling';
 import StudentDataPage from './pages/StudentDataPage';
 import StudentProfilePage from './pages/StudentProfilePage';
 import Sidebar from './components/Sidebar';
+import Notification from './pages/Notification';
 import './App.css';
 
 // Reusable layout wrapper that includes Sidebar
@@ -57,6 +58,14 @@ const App = () => {
         element={
           <Layout>
             <StudentCounseling />
+          </Layout>
+        }
+      />
+      <Route
+        path="/notification"
+        element={
+          <Layout>
+            <Notification />
           </Layout>
         }
       />

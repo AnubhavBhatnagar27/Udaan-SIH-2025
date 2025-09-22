@@ -11,11 +11,25 @@ export default function StudentCounseling() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [newRemark, setNewRemark] = useState("");
 
+  // Format date function to show current date in readable format
+  const formatDate = (date) => {
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   // Fetch students from the backend
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/students/"); // Make sure this URL matches your backend endpoint
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.get("http://localhost:8000/api/students/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }); // Make sure this URL matches your backend endpoint
         setStudents(response.data); // Set the students data
       } catch (err) {
         setError("Failed to fetch student data");
@@ -29,21 +43,16 @@ export default function StudentCounseling() {
 
   const filtered = students.filter((s) => {
     const name = s.name ? s.name.toLowerCase() : "";
-    const enrollment = s.enrollment ? s.enrollment.toLowerCase() : "";
+    const enrolment_no = s.enrolment_no ? s.enrolment_no.toLowerCase() : "";
     const searchTerm = search.toLowerCase();
 
-    return name.includes(searchTerm) || enrollment.includes(searchTerm);
+    return name.includes(searchTerm) || enrolment_no.includes(searchTerm);
   });
 
-  const toggleStatus = (index) => {
+  // New function to update status on button click
+  const updateStatus = (index, newStatus) => {
     setStudents((prev) =>
-      prev.map((s, i) => {
-        if (i === index) {
-          if (s.status === "Done") return { ...s, status: "Pending" };
-          if (s.status === "Pending") return { ...s, status: "Done" };
-        }
-        return s;
-      })
+      prev.map((s, i) => (i === index ? { ...s, status: newStatus } : s))
     );
   };
 
@@ -55,6 +64,8 @@ export default function StudentCounseling() {
   const addRemark = async () => {
     if (!newRemark.trim()) return;
 
+    const token = localStorage.getItem("accessToken");
+
     const remarkObj = {
       text: newRemark,
       date: new Date().toLocaleString(),
@@ -63,18 +74,25 @@ export default function StudentCounseling() {
 
     try {
       // Assuming your backend accepts a POST request to add a remark
-      await axios.post(`http://localhost:8000/api/students/`, remarkObj);
-
+      await axios.post(
+        `http://localhost:8000/api/students/${selectedStudent.st_id}/remarks/`,
+        remarkObj,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       // Update local state after adding the remark successfully
       const updated = students.map((s) =>
-        s.enrollment === selectedStudent.enrollment
+        s.enrolment_no === selectedStudent.enrolment_no
           ? { ...s, remarks: [...(s.remarks || []), remarkObj] }
           : s
       );
       setStudents(updated);
 
       const updatedStudent = updated.find(
-        (s) => s.enrollment === selectedStudent.enrollment
+        (s) => s.enrolment_no === selectedStudent.enrolment_no
       );
       setSelectedStudent(updatedStudent);
       setNewRemark("");
@@ -166,18 +184,22 @@ export default function StudentCounseling() {
                   filtered.map((s, index) => (
                     <tr key={index}>
                       <td>{s.name || "-"}</td>
-                      <td>{s.enrollment || "-"}</td>
-                      <td>{s.date || "-"}</td>
+                      <td>{s.enrolment_no || "-"}</td>
+                      <td>{formatDate(new Date())}</td> {/* Show current date here */}
                       <td>
-                        <span
-                          className={`status ${s.status ? s.status.toLowerCase() : ""}`}
-                          onClick={() =>
-                            s.status !== "Overdue" ? toggleStatus(index) : undefined
-                          }
-                          style={{ cursor: s.status !== "Overdue" ? "pointer" : "default" }}
-                        >
-                          {s.status || "-"}
-                        </span>
+                        <div className="status-buttons">
+                          {["Done", "Pending", "Overdue"].map((statusOption) => (
+                            <button
+                              key={statusOption}
+                              onClick={() => updateStatus(index, statusOption)}
+                              className={`status-btn ${
+                                s.status === statusOption ? "active" : ""
+                              }`}
+                            >
+                              {statusOption}
+                            </button>
+                          ))}
+                        </div>
                       </td>
                       <td>
                         <button className="remark-btn" onClick={() => openRemarkModal(s)}>

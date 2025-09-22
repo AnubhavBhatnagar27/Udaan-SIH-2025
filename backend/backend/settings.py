@@ -1,6 +1,6 @@
-
-
+from datetime import timedelta
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,6 +17,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+FAST2SMS_API_KEY=os.getenv("FAST2SMS_API_KEY","63XGTKBDVFeMUbNidClHEIWAfqv485kZPmuLSYcny2sQgpOtxwt0fRy1ZYoW45njSpNAVabmOMKQLdEX")
 
 # Application definition
 
@@ -127,25 +128,33 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # AUTH LOGIN
 import datetime
 
-JWT_AUTH = {
-    "JWT_ENCODE_HANDLER": "rest_framework_jwt.utils.jwt_encode_handler",
-    "JWT_DECODE_HANDLER": "rest_framework_jwt.utils.jwt_decode_handler",
-    "JWT_PAYLOAD_HANDLER": "rest_framework_jwt.utils.jwt_payload_handler",
-    "JWT_PAYLOAD_GET_USER_ID_HANDLER": "rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler",
-    "JWT_RESPONSE_PAYLOAD_HANDLER": "rest_framework_jwt.utils.jwt_response_payload_handler",
-    "JWT_SECRET_KEY": SECRET_KEY,
-    "JWT_GET_USER_SECRET_KEY": None,
-    "JWT_PUBLIC_KEY": None,
-    "JWT_PRIVATE_KEY": None,
-    "JWT_ALGORITHM": "HS256",
-    "JWT_VERIFY": True,
-    "JWT_VERIFY_EXPIRATION": True,
-    "JWT_LEEWAY": 0,
-    "JWT_EXPIRATION_DELTA": datetime.timedelta(days=180),
-    "JWT_AUDIENCE": "loyalty",
-    "JWT_ISSUER": None,
-    "JWT_ALLOW_REFRESH": True,
-    "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=365),
-    "JWT_AUTH_HEADER_PREFIX": "LOYALTY_TOKEN",
-    "JWT_AUTH_COOKIE": None,
+# JWT_AUTH = {
+#     "JWT_ENCODE_HANDLER": "rest_framework_jwt.utils.jwt_encode_handler",
+#     "JWT_DECODE_HANDLER": "rest_framework_jwt.utils.jwt_decode_handler",
+#     "JWT_PAYLOAD_HANDLER": "rest_framework_jwt.utils.jwt_payload_handler",
+#     "JWT_PAYLOAD_GET_USER_ID_HANDLER": "rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler",
+#     "JWT_RESPONSE_PAYLOAD_HANDLER": "rest_framework_jwt.utils.jwt_response_payload_handler",
+#     "JWT_SECRET_KEY": SECRET_KEY,
+#     "JWT_GET_USER_SECRET_KEY": None,
+#     "JWT_PUBLIC_KEY": None,
+#     "JWT_PRIVATE_KEY": None,
+#     "JWT_ALGORITHM": "HS256",
+#     "JWT_VERIFY": True,
+#     "JWT_VERIFY_EXPIRATION": True,
+#     "JWT_LEEWAY": 0,
+#     "JWT_EXPIRATION_DELTA": datetime.timedelta(days=180),
+#     "JWT_AUDIENCE": "loyalty",
+#     "JWT_ISSUER": None,
+#     "JWT_ALLOW_REFRESH": True,
+#     "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=365),
+#     "JWT_AUTH_HEADER_PREFIX": "LOYALTY_TOKEN",
+#     "JWT_AUTH_COOKIE": None,
+# }
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),     # ⏱ Access token valid for 1 hour
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),     # 🔁 Refresh token valid for 7 days
+    "ROTATE_REFRESH_TOKENS": True,                  # Optional: refresh token gets rotated on use
+    "BLACKLIST_AFTER_ROTATION": True,               # Optional: disables old refresh tokens
+    "AUTH_HEADER_TYPES": ("Bearer",),               # Default is "Bearer"
 }

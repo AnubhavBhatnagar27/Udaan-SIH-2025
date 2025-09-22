@@ -1,7 +1,7 @@
 // Sidebar.jsx
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Users, BarChart3, Info, LogOut } from "lucide-react";
+import { Home, Users, BarChart3, Info, LogOut,Bell } from "lucide-react";
 import logo from "../assets/logo.jpg"; // Adjust path if needed
 import "../styles/SideBar.css"; // Or move styles to Sidebar.css if modularizing further
 
@@ -14,6 +14,7 @@ export default function Sidebar() {
     { to: "/dashboard", icon: <Home size={20} />, label: "Dashboard" },
     { to: "/students", icon: <Users size={20} />, label: "Student Data" },
     { to: "/counseling", icon: <BarChart3 size={20} />, label: "Counseling" },
+    { to: "/notification", icon:<Bell size={20} />, label: "Notification" },
     {
       to: "/about",
       icon: <Info size={20} />,

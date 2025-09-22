@@ -7,14 +7,16 @@ export default function StudentCard({ student }) {
   }
 
   // Risk color mapping + icon
+  const riskLevel = student.prediction?.risk_level || "Unknown";
   const riskData = {
     "High Risk": { color: "#e74c3c", icon: "⚠️" },
     "Medium Risk": { color: "#e67e22", icon: "🟠" },
     "Low Risk": { color: "#27ae60", icon: "✅" },
+    "Unknown": { color: "#999", icon: "❔" },
   };
 
   // Safe fallback if student.risk is missing
-  const risk = riskData[student.risk] || { color: "#999", icon: "❔" };
+  const risk = riskData[riskLevel] || { color: "#999", icon: "❔" };
 
   // Safely access guardian info
   const guardianName = student.guardian?.name || "N/A";
@@ -34,13 +36,13 @@ export default function StudentCard({ student }) {
           <p><strong>Name:</strong> {student.name || "N/A"}</p>
           <p><strong>Branch:</strong> {student.branch || "N/A"}</p>
           <p><strong>Batch:</strong> {student.batch || "N/A"}</p>
-          <p><strong>Enrollment No.:</strong> {student.enrollment || "N/A"}</p>
+          <p><strong>Enrollment No.:</strong> {student.enrolment_no || "N/A"}</p>
 
           {/* Risk Badge */}
           <p>
             <strong>Risk:</strong>{" "}
             <span className="risk-badge" style={{ backgroundColor: risk.color }}>
-              {risk.icon} <span className="risk-text">{student.risk || "N/A"}</span>
+              {risk.icon} <span className="risk-text">{riskLevel || "N/A"}</span>
             </span>
           </p>
         </div>
@@ -49,8 +51,8 @@ export default function StudentCard({ student }) {
       {/* Guardian Info */}
       <div className="guardian-section">
         <h4>👨‍👩‍👧 Guardian Details</h4>
-        <p><strong>Name:</strong> {guardianName}</p>
-        <p><strong>Mobile No:</strong> {guardianMobile}</p>
+        <p><strong>Name:</strong> {student.guardian_name}</p>
+        <p><strong>Mobile No:</strong> {student.guardian_contact}</p>
       </div>
     </div>
   );

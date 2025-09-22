@@ -13,10 +13,29 @@ function ProfileSection() {
   const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/mentors/").then((res) => {
-      setMentor(res.data);
-    });
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+      setMentor(null);
+      return;
+    }
+
+    axios
+      .get("http://localhost:8000/api/mentors/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setMentor(res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching mentor:", error);
+        setMentor(null);
+      });
   }, []);
+
+
 
   if (!mentor) return <div>Loading mentor profile...</div>;
 
@@ -29,6 +48,7 @@ function ProfileSection() {
   };
 
   const handleUploadClick = async () => {
+    const token = localStorage.getItem("accessToken");
     if (!selectedFile) {
       alert("Please select a file first.");
       return;
@@ -56,8 +76,11 @@ function ProfileSection() {
     try {
       console.log("Uploading file:", selectedFile);
       const response = await axios.post("http://localhost:8000/api/upload/", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // Do NOT set Content-Type manually, let Axios handle it.
+      },
+    });
 
       if (response.status === 201) {
         alert("Upload successful!");
@@ -175,9 +198,17 @@ function StudentTable() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
+    const token = localStorage.getItem("accessToken");
     axios
-      .get("http://localhost:8000/api/students/")
-      .then((res) => setStudents(res.data))
+      .get("http://localhost:8000/api/students/",{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log("Fetched students:", res.data);
+        setStudents(res.data);
+      })
       .catch((err) => console.error("Error fetching students:", err));
   }, []);
 

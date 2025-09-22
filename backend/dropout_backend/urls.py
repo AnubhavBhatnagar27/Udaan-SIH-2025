@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import path, include
 from dropout_backend.views import *
 from rest_framework_simplejwt.views import TokenRefreshView
-
 urlpatterns = [
     path('api/login/create/', CreateLogin.as_view()),
     path('api/login/', LoginView.as_view()),
@@ -13,4 +12,5 @@ urlpatterns = [
     path('api/mentors/', MentorView.as_view()),
     path('api/upload/', UploadCSVView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
+    path('api/send-sms/', SendSMSView().as_view()),
 ]
