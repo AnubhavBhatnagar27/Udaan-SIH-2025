@@ -1,130 +1,39 @@
 // src/pages/StudentCounseling.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/StudentCounseling.css";
+import axios from "axios"; // Import axios for API requests
 
 export default function StudentCounseling() {
   const [search, setSearch] = useState("");
-  const [students, setStudents] = useState([
-    {
-      name: "Aadarsh Thakur",
-      enrollment: "0105CD231001",
-      date: "01/11/2023",
-      status: "Done",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Rahul Sharma",
-      enrollment: "0105CD231011",
-      date: "02/11/2023",
-      status: "Pending",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Sneha Verma",
-      enrollment: "0105CD231021",
-      date: "05/11/2023",
-      status: "Overdue",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Umesh Farkade",
-      enrollment: "0105AL231216",
-      date: "06/11/2023",
-      status: "Done",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Kannat Pawar",
-      enrollment: "0105EC211225",
-      date: "07/11/2023",
-      status: "Overdue",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Sneha Bhargav",
-      enrollment: "0105AL213200",
-      date: "12/11/2023",
-      status: "Pending",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Kunal Rai",
-      enrollment: "0105CB211015",
-      date: "13/11/2023",
-      status: "Done",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Pankaj Choudhary",
-      enrollment: "0105ITR211015",
-      date: "13/11/2023",
-      status: "Done",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Aarav Sharma",
-      enrollment: "0105IT211015",
-      date: "14/11/2023",
-      status: "Pending",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Neha Sharma",
-      enrollment: "0105EC211015",
-      date: "15/11/2023",
-      status: "Overdue",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Priya Kumari",
-      enrollment: "0105EC211015",
-      date: "16/11/2023",
-      status: "Done",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-    {
-      name: "Khayti Pawar",
-      enrollment: "0105AL211015",
-      date: "16/11/2023",
-      status: "Overdue",
-      remarks: [
-        { text: "Excellent improvement", date: "06/11/2023, 01:45 PM", counselor: "Prof. Sharma" },
-      ],
-    },
-
-    
-  ]);
-
+  const [students, setStudents] = useState([]); // Empty array initially
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [newRemark, setNewRemark] = useState("");
 
-  const filtered = students.filter(
-    (s) =>
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.enrollment.toLowerCase().includes(search.toLowerCase())
-  );
+  // Fetch students from the backend
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/students/"); // Make sure this URL matches your backend endpoint
+        setStudents(response.data); // Set the students data
+      } catch (err) {
+        setError("Failed to fetch student data");
+      } finally {
+        setLoading(false); // Data fetching is complete, hide loading spinner
+      }
+    };
+
+    fetchStudents();
+  }, []); // Empty dependency array ensures this only runs once when the component mounts
+
+  const filtered = students.filter((s) => {
+    const name = s.name ? s.name.toLowerCase() : "";
+    const enrollment = s.enrollment ? s.enrollment.toLowerCase() : "";
+    const searchTerm = search.toLowerCase();
+
+    return name.includes(searchTerm) || enrollment.includes(searchTerm);
+  });
 
   const toggleStatus = (index) => {
     setStudents((prev) =>
@@ -143,8 +52,7 @@ export default function StudentCounseling() {
     setNewRemark("");
   };
 
-  // ✅ FIXED addRemark (selectedStudent bhi update hoga)
-  const addRemark = () => {
+  const addRemark = async () => {
     if (!newRemark.trim()) return;
 
     const remarkObj = {
@@ -153,23 +61,30 @@ export default function StudentCounseling() {
       counselor: "Prof. Sharma",
     };
 
-    // Students array update
-    const updated = students.map((s) =>
-      s.enrollment === selectedStudent.enrollment
-        ? { ...s, remarks: [...s.remarks, remarkObj] }
-        : s
-    );
+    try {
+      // Assuming your backend accepts a POST request to add a remark
+      await axios.post(`http://localhost:8000/api/students/`, remarkObj);
 
-    setStudents(updated);
+      // Update local state after adding the remark successfully
+      const updated = students.map((s) =>
+        s.enrollment === selectedStudent.enrollment
+          ? { ...s, remarks: [...(s.remarks || []), remarkObj] }
+          : s
+      );
+      setStudents(updated);
 
-    // ✅ Modal ke liye bhi update karo
-    const updatedStudent = updated.find(
-      (s) => s.enrollment === selectedStudent.enrollment
-    );
-    setSelectedStudent(updatedStudent);
-
-    setNewRemark("");
+      const updatedStudent = updated.find(
+        (s) => s.enrollment === selectedStudent.enrollment
+      );
+      setSelectedStudent(updatedStudent);
+      setNewRemark("");
+    } catch (error) {
+      setError("Failed to add remark");
+    }
   };
+
+  if (loading) return <div>Loading...</div>; // Show loading message while fetching data
+  if (error) return <div>{error}</div>; // Show error if data fetching fails
 
   return (
     <div className="counseling-page">
@@ -178,19 +93,33 @@ export default function StudentCounseling() {
 
         {/* Stats */}
         <div className="stats-bar">
-          <div className="stat-box"><h3>Total Students</h3><p>{students.length}</p></div>
-          <div className="stat-box"><h3>✅ Completed</h3><p>{students.filter((s) => s.status === "Done").length}</p></div>
-          <div className="stat-box"><h3>⏳ Pending</h3><p>{students.filter((s) => s.status === "Pending").length}</p></div>
-          <div className="stat-box"><h3>⚠️ Overdue</h3><p>{students.filter((s) => s.status === "Overdue").length}</p></div>
+          <div className="stat-box">
+            <h3>Total Students</h3>
+            <p>{students.length}</p>
+          </div>
+          <div className="stat-box">
+            <h3>✅ Completed</h3>
+            <p>{students.filter((s) => s.status === "Done").length}</p>
+          </div>
+          <div className="stat-box">
+            <h3>⏳ Pending</h3>
+            <p>{students.filter((s) => s.status === "Pending").length}</p>
+          </div>
+          <div className="stat-box">
+            <h3>⚠️ Overdue</h3>
+            <p>{students.filter((s) => s.status === "Overdue").length}</p>
+          </div>
         </div>
 
         {/* Progress */}
         <div className="progress-section">
           <p>
             Counseling Completed:{" "}
-            {Math.round(
-              (students.filter((s) => s.status === "Done").length / students.length) * 100
-            )}
+            {students.length > 0
+              ? Math.round(
+                  (students.filter((s) => s.status === "Done").length / students.length) * 100
+                )
+              : 0}
             %
           </p>
           <div className="progress-bar">
@@ -198,7 +127,9 @@ export default function StudentCounseling() {
               className="progress-fill"
               style={{
                 width: `${
-                  (students.filter((s) => s.status === "Done").length / students.length) * 100
+                  students.length > 0
+                    ? (students.filter((s) => s.status === "Done").length / students.length) * 100
+                    : 0
                 }%`,
               }}
             ></div>
@@ -234,16 +165,18 @@ export default function StudentCounseling() {
                 {filtered.length > 0 ? (
                   filtered.map((s, index) => (
                     <tr key={index}>
-                      <td>{s.name}</td>
-                      <td>{s.enrollment}</td>
-                      <td>{s.date}</td>
+                      <td>{s.name || "-"}</td>
+                      <td>{s.enrollment || "-"}</td>
+                      <td>{s.date || "-"}</td>
                       <td>
                         <span
-                          className={`status ${s.status.toLowerCase()}`}
-                          onClick={() => toggleStatus(index)}
+                          className={`status ${s.status ? s.status.toLowerCase() : ""}`}
+                          onClick={() =>
+                            s.status !== "Overdue" ? toggleStatus(index) : undefined
+                          }
                           style={{ cursor: s.status !== "Overdue" ? "pointer" : "default" }}
                         >
-                          {s.status}
+                          {s.status || "-"}
                         </span>
                       </td>
                       <td>
@@ -255,7 +188,9 @@ export default function StudentCounseling() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="no-data">❌ No records found</td>
+                    <td colSpan="5" className="no-data">
+                      ❌ No records found
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -263,16 +198,17 @@ export default function StudentCounseling() {
           </div>
         </div>
 
-        {/* ✅ Remark Modal */}
+        {/* Remark Modal */}
         {selectedStudent && (
           <div className="modal-overlay" onClick={() => setSelectedStudent(null)}>
             <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-              <h3>Remarks - {selectedStudent.name}</h3>
+              <h3>Remarks - {selectedStudent.name || "-"}</h3>
               <ul className="remark-history">
-                {selectedStudent.remarks.length > 0 ? (
+                {selectedStudent.remarks && selectedStudent.remarks.length > 0 ? (
                   selectedStudent.remarks.map((r, i) => (
                     <li key={i}>
-                      <strong>{r.counselor}</strong> ({r.date}): {r.text}
+                      <strong>{r.counselor || "Unknown"}</strong> ({r.date || "Unknown"}):{" "}
+                      {r.text || ""}
                     </li>
                   ))
                 ) : (

@@ -1,0 +1,136 @@
+/* Reset */
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #8e9eab, #a9c9ff);
+}
+
+/* Center container */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* Card styling */
+.login-card {
+  background-color: #f7f8fc;
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  width: 350px;
+  text-align: left;
+}
+
+/* Title */
+.login-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #6c75f0;
+  margin-bottom: 10px;
+}
+
+/* Subtitle */
+.login-subtitle {
+  text-align: center;
+  color: #888;
+  font-size: 0.95rem;
+  margin-bottom: 25px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tab {
+  margin: 0 10px;
+  font-weight: bold;
+  color: gray;
+  cursor: pointer;
+  padding-bottom: 5px;
+}
+
+.tab.active {
+  color: #3f51b5;
+  border-bottom: 2px solid #3f51b5;
+}
+
+/* Form labels */
+.login-form > label {
+  font-size: 0.9rem;
+  margin: 10px 0 5px;
+  display: block;
+  color: #333;
+}
+
+/* Inputs styling for email, password, and text fields */
+.login-form > input[type="email"],
+.login-form > input[type="password"],
+.login-form > input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+}
+
+/* Password wrapper input adjustment */
+.password-wrapper input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 0; /* Remove margin-bottom to avoid double spacing */
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+}
+
+/* Show password toggle */
+.show-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Options */
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  margin: 10px 0 20px;
+}
+
+.forgot-password {
+  color: #6c75f0;
+  text-decoration: none;
+}
+
+/* Button */
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to right, #6c75f0, #a17ff5);
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  opacity: 0.9;
+}

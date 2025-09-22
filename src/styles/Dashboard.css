@@ -1,0 +1,380 @@
+/* ================== Global Container ================== */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  height: 100vh;
+  font-family: "Inter", sans-serif;
+  color: #111827;
+  background: #f8f9fd;
+}
+
+/* ================== Sidebar (omitted for brevity if not used here) ================== */
+
+/* ================== Main Content ================== */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-left: 6rem;
+  transition: margin-left 0.3s ease;
+}
+
+/* ================== Profile Section ================== */
+.profile-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  min-height: 220px;
+  gap: 2rem;
+  animation: fadeIn 0.6s ease;
+  flex-wrap: wrap;
+}
+
+.profile-left {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+}
+
+.profile-avatar {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  border: 3px solid #2563eb;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.profile-info h2 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.profile-info p {
+  font-size: 0.9rem;
+  color: #374151;
+  margin: 0.2rem 0;
+}
+
+/* ----- Upload Box ----- */
+.profile-right {
+  margin-left: auto;
+}
+
+.upload-box {
+  background: #fff;
+  border: 2px dashed #1e6fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.upload-box:hover {
+  background: #f9fbff;
+  border-color: #2563eb;
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: 0.2s ease;
+}
+
+.upload-icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.upload-box h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.upload-box p {
+  font-size: 0.9rem;
+  color: #374151;
+  margin: 0;
+}
+
+.upload-box small {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.upload-btn {
+  background: #2563eb;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.upload-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+/* ================== Risk Analysis ================== */
+.risk-analysis {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem 3rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  width: 80%;
+  margin: 0 auto 2rem;
+  animation: fadeIn 0.6s ease;
+}
+
+.risk-title {
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.risk-items {
+  display: flex;
+  justify-content: space-around;
+  gap: 4rem;
+  flex-wrap: wrap;
+}
+
+.risk-item {
+  text-align: center;
+  flex: 1;
+  min-width: 140px;
+}
+
+.risk-circle {
+  width: 7rem;
+  height: 7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: auto;
+  transition: all 0.3s ease;
+  color: #fff;
+}
+
+.risk-circle:hover {
+  transform: scale(1.15);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.risk-circle.red {
+  background: #ef4444;
+}
+
+.risk-circle.blue {
+  background: #f59e0b;
+}
+
+.risk-circle.yellow {
+  background: #10b981;
+}
+
+.risk-level {
+  margin-top: 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.risk-value {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* ================== Student Table ================== */
+.student-table-container {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.6s ease;
+}
+
+.student-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.student-table-header h3 {
+  font-size: 1.5rem;
+}
+
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 25px;
+  padding: 6px 14px;
+  width: 260px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.search-wrapper:hover,
+.search-wrapper:focus-within {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: #3b82f6;
+}
+
+.search-icon {
+  width: 18px;
+  height: 18px;
+  color: #6b7280;
+  margin-right: 8px;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 0.9rem;
+  background: transparent;
+  color: #374151;
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  padding: 0.75rem;
+  background: #f9fafb;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+thead th:last-child,
+tbody td:last-child {
+  text-align: center;
+}
+
+tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s ease;
+}
+
+tbody tr:hover {
+  background: #f9fafb;
+}
+
+td {
+  padding: 0.9rem;
+  vertical-align: middle;
+  font-size: 0.85rem;
+}
+
+.student-name-cell strong {
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.student-name-cell p {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.2rem;
+}
+
+.badge {
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-high {
+  background: #ef4444;
+}
+
+.badge-medium {
+  background: #f59e0b;
+}
+
+.badge-low {
+  background: #10b981;
+}
+
+.badge-safe {
+  background: #22c55e;
+}
+
+.no-data {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 1rem;
+  padding: 2rem 0;
+}
+
+/* ================== Animations ================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
