@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-2w_yq$cq&wzz2480y_d&m*8wabd%19^1w2evyxj7n(fieq1*te
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['your-backend-name.onrender.com']
 
 FAST2SMS_API_KEY=os.getenv("FAST2SMS_API_KEY","63XGTKBDVFeMUbNidClHEIWAfqv485kZPmuLSYcny2sQgpOtxwt0fRy1ZYoW45njSpNAVabmOMKQLdEX")
 
@@ -42,6 +42,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,7 +52,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = ["https://your-frontend.vercel.app",]
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -117,6 +118,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = 'static/'
 
