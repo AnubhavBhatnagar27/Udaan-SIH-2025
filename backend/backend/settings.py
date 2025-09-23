@@ -52,7 +52,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = ["https://udaan-sih-2025.vercel.app/",]
+CORS_ALLOW_ALL_ORIGINS = False  # (or just remove it — False is default)
+
+CORS_ALLOWED_ORIGINS = [
+    "https://udaan-sih-2025.vercel.app",
+]
+
 
 ROOT_URLCONF = 'backend.urls'
 
