@@ -31,7 +31,7 @@ export default function Sidebar() {
     >
       <div className="logo-section">
         <img src={logo} alt="App Logo" className="sidebar-logo" />
-        {isExpanded && <span className="logo-text">Udaan</span>}
+        {/* {isExpanded && <span className="logo-text">Udaan</span>} */}
       </div>
 
       <nav className="nav-buttons">
