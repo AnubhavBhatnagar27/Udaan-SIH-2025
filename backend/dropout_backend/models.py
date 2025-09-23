@@ -18,7 +18,7 @@ class StudentRecord(models.Model):
     enrolment_no = models.CharField(max_length=50, unique=True, default="", blank=True)
     current_cgpa = models.FloatField(null=True, default=0.0)
     guardian_name = models.CharField(max_length=100, default="", null=True, blank=True)
-    guardian_contact = models.CharField(max_length=15, default="",null=True, blank=True)
+    guardian_contact = models.EmailField(max_length=254, default="",null=True, blank=True)
     attendance = models.FloatField()
     avg_test_score = models.FloatField()
     attempts = models.IntegerField(null=True, default=0)
@@ -33,6 +33,8 @@ class StudentRecord(models.Model):
 
     # Remove or deprecate this if no longer needed
     prediction = models.JSONField(null=True, blank=True)
+    status = models.CharField(max_length=20, default="Unknown")  # e.g., "At Risk", "Safe", etc.
+    date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.st_id} - {self.name}"
@@ -71,11 +73,22 @@ class Remark(models.Model):
     def __str__(self):
         return f"Remark for {self.student.name} at {self.created_at}"
     
-class SMSNotification(models.Model):
-    recipient_number = models.CharField(max_length=15)
+# class SMSNotification(models.Model):
+#     recipient_number = models.CharField(max_length=15)
+#     message = models.TextField()
+#     status = models.CharField(max_length=20)  # success / failed
+#     sent_at = models.DateTimeField(default=timezone.now)
+
+#     def __str__(self):
+#         return f"{self.student.name} - {self.status} @ {self.sent_at.strftime('%d-%m-%Y %I:%M %p')}"
+
+class EmailNotification(models.Model):
+    student = models.ForeignKey(StudentRecord, related_name='email_notifications', on_delete=models.CASCADE)
+    recipient_email = models.EmailField(max_length=254)
+    subject = models.CharField(max_length=255)
     message = models.TextField()
-    status = models.CharField(max_length=20)  # success / failed
+    status = models.CharField(max_length=20, default="Sent")  # e.g., Sent, Failed
     sent_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.student.name} - {self.status} @ {self.sent_at.strftime('%d-%m-%Y %I:%M %p')}"
+        return f"Email to {self.student.name} ({self.recipient_email}) at {self.sent_at.strftime('%d-%m-%Y %I:%M %p')}"

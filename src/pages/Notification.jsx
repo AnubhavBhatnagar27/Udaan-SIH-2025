@@ -10,7 +10,17 @@ export default function Notification() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sendingIndex, setSendingIndex] = useState(null); // Track which student is sending SMS
+  const [sendingIndex, setSendingIndex] = useState(null); // Track which student is sending email
+
+  // New state for modal and email form inputs
+  const [showModal, setShowModal] = useState(false);
+  const [emailForm, setEmailForm] = useState({
+    email: "",
+    subject: "Counseling Alert Notification",
+    message: "",
+    studentIndex: null,
+    studentName: "",
+  });
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -40,42 +50,65 @@ export default function Notification() {
   const completedCount = filteredStudents.filter((s) => s.status?.toLowerCase() === "completed").length;
   const pendingCount = filteredStudents.filter((s) => s.status?.toLowerCase() === "pending").length;
 
-  // Send SMS alert handler
-  const sendSMSAlert = async (student, index) => {
-    setSendingIndex(index);
+  // Open modal and prefill data
+  const openModal = (student, index) => {
+    setEmailForm({
+      email: student.guardian_contact || "",
+      subject: "Counseling Alert Notification",
+      message: `Hello ${student.name}, this is your counseling alert notification via email.`,
+      studentIndex: index,
+      studentName: student.name || "",
+    });
+    setShowModal(true);
+    setError(null);
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  // Handle input changes inside modal form
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEmailForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Send Email alert handler (called from modal submit)
+  const sendEmailAlert = async () => {
+    setSendingIndex(emailForm.studentIndex);
     setError(null);
 
     try {
       const token = localStorage.getItem("accessToken");
-
-      // Customize your SMS message here
-      const message = `Hello ${student.name}, this is your counseling alert notification.`;
-
       const payload = {
-        number: student.number,
-        message: message,
+        email: emailForm.email,
+        subject: emailForm.subject,
+        message: emailForm.message,
+        student_id: students[emailForm.studentIndex].st_id,
       };
 
-      // Call your backend SMS send API (make sure your backend supports this)
-      const response = await axios.post(`${apiUrl}/api/send-sms`, payload, {
+      // Call your backend email send API
+      const response = await axios.post(`${apiUrl}/api/send-email/`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Response example: { success: true, dateSent: "2025-09-23 15:30", status: "Delivered" }
-      if (response.data.success) {
-        // Update the student in the state with new date and status
+      if (response.data.status === "Email sent successfully.") {
+        // Update student data in the state, like date and status
         const updatedStudents = [...students];
-        updatedStudents[index] = {
-          ...student,
-          date: response.data.dateSent,
-          status: response.data.status || "Delivered",
+        const idx = emailForm.studentIndex;
+        updatedStudents[idx] = {
+          ...updatedStudents[idx],
+          date: new Date().toLocaleString(),
+          status: "Email Sent",
         };
         setStudents(updatedStudents);
+        setShowModal(false);
       } else {
-        setError("SMS sending failed. Try again.");
+        setError("Email sending failed. Try again.");
       }
     } catch (err) {
-      setError("Error sending SMS.");
+      setError("Error sending email.");
     } finally {
       setSendingIndex(null);
     }
@@ -86,7 +119,7 @@ export default function Notification() {
 
   return (
     <div className="notification-container">
-      <h1 className="page-title">CSE SEM-5 LIST</h1>
+      <h1 className="page-title">Alert Notification Dashboard</h1>
 
       <div className="stats-grid">
         <div className="stat-card">
@@ -124,7 +157,7 @@ export default function Notification() {
               <th>Student Name</th>
               <th>Enrollment No.</th>
               <th>Notification Date</th>
-              <th>Recipient Number</th>
+              <th>Guardian Email</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
@@ -136,10 +169,14 @@ export default function Notification() {
                   <td>{student.name || "-"}</td>
                   <td>{student.enrollment || student.enrolment_no || "-"}</td>
                   <td>{student.date || "-"}</td>
-                  <td>{student.number || "-"}</td>
+                  <td>{student.guardian_contact || "-"}</td>
                   <td
                     style={{
-                      color: student.status?.toLowerCase() === "completed" ? "green" : "orange",
+                      color:
+                        student.status?.toLowerCase() === "completed" ||
+                        student.status?.toLowerCase() === "email sent"
+                          ? "green"
+                          : "orange",
                       fontWeight: "bold",
                       textTransform: "capitalize",
                     }}
@@ -148,11 +185,11 @@ export default function Notification() {
                   </td>
                   <td>
                     <button
-                      onClick={() => sendSMSAlert(student, index)}
+                      onClick={() => openModal(student, index)}
                       disabled={sendingIndex === index}
                       style={{ padding: "5px 10px", cursor: sendingIndex === index ? "not-allowed" : "pointer" }}
                     >
-                      {sendingIndex === index ? "Sending..." : "Send Alert"}
+                      {sendingIndex === index ? "Sending Email..." : "Send Alert"}
                     </button>
                   </td>
                 </tr>
@@ -167,6 +204,60 @@ export default function Notification() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal Popup */}
+      {showModal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h2>Send Alert Email to {emailForm.studentName}</h2>
+
+            <label>
+              Email Address:
+              <input
+                type="email"
+                name="email"
+                value={emailForm.email}
+                onChange={handleInputChange}
+                required
+                style={{ width: "100%" }}
+              />
+            </label>
+
+            <label>
+              Subject:
+              <input
+                type="text"
+                name="subject"
+                value={emailForm.subject}
+                onChange={handleInputChange}
+                required
+                style={{ width: "100%" }}
+              />
+            </label>
+
+            <label>
+              Message:
+              <textarea
+                name="message"
+                value={emailForm.message}
+                onChange={handleInputChange}
+                rows={6}
+                required
+                style={{ width: "100%" }}
+              />
+            </label>
+
+            <div className="modal-actions">
+              <button onClick={sendEmailAlert} disabled={sendingIndex !== null} style={{ marginRight: "10px" }}>
+                {sendingIndex !== null ? "Sending..." : "Send Email"}
+              </button>
+              <button onClick={closeModal} disabled={sendingIndex !== null}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

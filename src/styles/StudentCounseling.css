@@ -6,21 +6,69 @@
   --danger: #e74c3c;
   --text-dark: #222;
   --text-light: #555;
-  --bg-light: #f7f7f7;
+  /* --bg-light: #f7f7f7; */
   --white: #fff;
   --shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* ✅ GLOBAL SCROLL FIX (Only for this page) */
+html, body {
+  overflow: hidden; /* ✅ Scroll completely disable */
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+
+
 /*  Layout */
+/* 🎨 Page Layout */
 .counseling-page {
   display: flex;
+  justify-content: center; /* Center horizontally */
+  padding: 20px 40px;
   min-height: 100vh;
   background: var(--bg-light);
-  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden; /* Page scroll hide */
 }
 
 .counseling-main {
   flex: 1;
+  max-width: 1200px;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 20px 25px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full screen height */
+  overflow: hidden; /* Extra content page se bahar na jaye */
+}
+
+
+/* Table Scroll inside content */
+.table-scroll {
+  max-height: 60vh;
+  overflow-y: auto; /* Vertical scroll only */
+  overflow-x: hidden; /* Horizontal scroll remove */
+}
+
+/* Table fixed width columns to prevent horizontal scroll */
+.student-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+
+.counseling-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Extra content page se bahar na jaye */
 }
 
 .page-title {
@@ -98,62 +146,51 @@
   box-shadow: var(--shadow);
 }
 
+/* 📑 Table Header Styling */
 .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: #ffffff;
+  padding: 12px 18px;
   margin-bottom: 12px;
-  flex-wrap: wrap;
-  gap: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
 }
 
 .table-header h3 {
   margin: 0;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 600;
   color: var(--text-dark);
+  letter-spacing: 0.5px;
 }
 
-/* ✅ Search Box */
-.search-box {
-  position: relative;
+/* 🔎 Search Box - Clean Design */
+.search-box input {
   width: 220px;
-  flex-shrink: 0;
-}
-
-.search-input {
-  width: 100%;
-  padding: 8px 35px 8px 12px;
+  padding: 10px 14px;
   font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: var(--white);
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  background: #f9f9f9;
   outline: none;
-  transition: 0.2s ease;
+  transition: all 0.25s ease;
 }
 
-.search-input:focus {
+.search-box input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 6px rgba(46, 204, 113, 0.4);
+  background: #fff;
+  box-shadow: 0 0 6px rgba(46, 204, 113, 0.25);
 }
 
-🔍 Icon inside input
-.search-box::after {
-  content: "🔍";
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-  color: var(--text-light);
-  pointer-events: none;
-}
 
 /* Student Table  */
 .table-scroll {
-  max-height: 320px;
   overflow-y: auto;
-  border-radius: 6px;
+  overflow-x: hidden; /* Horizontal scroll hata do */
+  max-height: 60vh;
 }
 
 .student-table {
@@ -199,6 +236,30 @@
 .status.overdue {
   background: #f8d7da;
   color: #721c24;
+}
+
+.status-btn.single-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+  border: none;
+}
+
+.status-btn.status-pending {
+  background: #ffeaa7;
+  color: #2d3436;
+}
+
+.status-btn.status-done {
+  background: #55efc4;
+  color: #2d3436;
+}
+
+.status-btn.status-overdue {
+  background: #ff7675;
+  color: white;
 }
 
 .status.done:hover,

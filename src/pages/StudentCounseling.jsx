@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import "../styles/StudentCounseling.css";
 import axios from "axios"; // Import axios for API requests
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export default function StudentCounseling() {
   const [search, setSearch] = useState("");
   const [students, setStudents] = useState([]); // Empty array initially
@@ -10,6 +12,8 @@ export default function StudentCounseling() {
   const [error, setError] = useState(null); // Error state
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [newRemark, setNewRemark] = useState("");
+  const [currentMentor, setCurrentMentor] = useState({ name: "Unknown" });
+
 
   // Format date function to show current date in readable format
   const formatDate = (date) => {
@@ -20,28 +24,44 @@ export default function StudentCounseling() {
     });
   };
 
-  const apiUrl = process.env.REACT_APP_API_URL;
+useEffect(() => {
+  const fetchData = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setError("No access token found. Please login.");
+      setLoading(false);
+      return;
+    }
 
-  // Fetch students from the backend
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-        const response = await axios.get(`${apiUrl}/api/students/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }); // Make sure this URL matches your backend endpoint
-        setStudents(response.data); // Set the students data
-      } catch (err) {
-        setError("Failed to fetch student data");
-      } finally {
-        setLoading(false); // Data fetching is complete, hide loading spinner
-      }
-    };
+    try {
+      const [studentsRes, mentorRes] = await Promise.all([
+        fetch("${apiUrl}/api/students/", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch("${apiUrl}/api/mentors/", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
 
-    fetchStudents();
-  }, []); // Empty dependency array ensures this only runs once when the component mounts
+      if (!studentsRes.ok) throw new Error("Failed to fetch students");
+      if (!mentorRes.ok) throw new Error("Failed to fetch mentor data");
+
+      const studentsData = await studentsRes.json();
+      const mentorData = await mentorRes.json();
+
+      setStudents(studentsData);
+      setCurrentMentor(mentorData); // Assuming { name, id, institute, etc. }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
+
+// Empty dependency array ensures this only runs once when the component mounts
 
   const filtered = students.filter((s) => {
     const name = s.name ? s.name.toLowerCase() : "";
@@ -58,50 +78,75 @@ export default function StudentCounseling() {
     );
   };
 
-  const openRemarkModal = (student) => {
-    setSelectedStudent(student);
-    setNewRemark("");
-  };
+  const openRemarkModal = async (student) => {
+  setSelectedStudent(null); // clear old selection to avoid stale UI
+  setNewRemark("");
+
+  const token = localStorage.getItem("accessToken");
+  try {
+    const res = await axios.get(
+      `${apiUrl}/api/students/${student.st_id}/remarks/`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    // Add fetched remarks to student and set selectedStudent
+    setSelectedStudent({ ...student, remarks: res.data });
+  } catch (err) {
+    console.error("Failed to fetch remarks:", err);
+    setError("Failed to load remarks");
+    // Still open modal but with empty remarks
+    setSelectedStudent({ ...student, remarks: [] });
+  }
+};
+
 
   const addRemark = async () => {
-    if (!newRemark.trim()) return;
+  if (!newRemark.trim()) return;
 
-    const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("accessToken");
 
-    const remarkObj = {
-      text: newRemark,
-      date: new Date().toLocaleString(),
-      counselor: "Prof. Sharma",
-    };
-
-    try {
-      // Assuming your backend accepts a POST request to add a remark
-      await axios.post(
-        `${apiUrl}/api/students/${selectedStudent.st_id}/remarks/`,
-        remarkObj,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // Update local state after adding the remark successfully
-      const updated = students.map((s) =>
-        s.enrolment_no === selectedStudent.enrolment_no
-          ? { ...s, remarks: [...(s.remarks || []), remarkObj] }
-          : s
-      );
-      setStudents(updated);
-
-      const updatedStudent = updated.find(
-        (s) => s.enrolment_no === selectedStudent.enrolment_no
-      );
-      setSelectedStudent(updatedStudent);
-      setNewRemark("");
-    } catch (error) {
-      setError("Failed to add remark");
-    }
+  const remarkPayload = {
+    text: newRemark,
+    counselor: currentMentor.name || "Unknown", // Or whatever your logged-in mentor is
   };
+
+  try {
+    // 1. Post the new remark to the backend
+    await axios.post(
+      `${apiUrl}/api/students/${selectedStudent.st_id}/remarks/`,
+      remarkPayload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // 2. Fetch updated remarks from backend
+    const remarksRes = await axios.get(
+      `${apiUrl}/api/students/${selectedStudent.st_id}/remarks/`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // 3. Update student with fresh remarks
+    setSelectedStudent((prev) => ({
+      ...prev,
+      remarks: remarksRes.data,
+    }));
+
+    setNewRemark("");
+  } catch (error) {
+    console.error("Error adding remark:", error.response?.data || error.message);
+    setError("Failed to add remark");
+  }
+};
+
 
   if (loading) return <div>Loading...</div>; // Show loading message while fetching data
   if (error) return <div>{error}</div>; // Show error if data fetching fails
@@ -109,7 +154,7 @@ export default function StudentCounseling() {
   return (
     <div className="counseling-page">
       <div className="counseling-main">
-        <h2 className="page-title">📚 CSE SEM-5 Counseling Dashboard</h2>
+        <h2 className="page-title">📚 Student Counseling Dashboard</h2>
 
         {/* Stats */}
         <div className="stats-bar">

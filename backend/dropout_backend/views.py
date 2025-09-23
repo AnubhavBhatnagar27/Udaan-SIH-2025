@@ -12,7 +12,11 @@ from django.utils import timezone
 from .models import *
 from .ml_model import predict_from_model
 import pandas as pd
-from .sms_utils import send_sms
+from .email_utils import *
+from rest_framework import status
+
+from .models import StudentRecord, EmailNotification
+from .email_utils import send_email
 
 # class CreateLogin(APIView):
 #     permission_classes = [AllowAny]
@@ -52,6 +56,7 @@ class CreateLogin(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
         full_name = request.data.get("fullName")
+        institute = request.data.get("instituteName","Unknown Institute")  # New field
         employee_id = request.data.get("employeeId")
         branch = request.data.get("branch")
         academic_session = request.data.get("academicSession")
@@ -85,7 +90,7 @@ class CreateLogin(APIView):
             user=user,
             name=full_name,
             id_number=employee_id,
-            institute="Unknown Institute",  # Since not collected from frontend
+            institute=institute,  # Since not collected from frontend
             branch=branch,
             session=academic_session
         )
@@ -117,16 +122,17 @@ class LoginView(APIView):
 class SingleStudentRecordView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, st_id):
+    def get(self, request, st_id=None):  # accept st_id from URL kwargs
+        print(f"Request user: {request.user}")
+        print(f"Requested student ID: {st_id}")
+        mentor_profile = request.user.profile
         try:
-            mentor = Mentor.objects.get(user=request.user)
-        except Mentor.DoesNotExist:
-            return Response({"error": "No mentor found for this user"}, status=404)
-
-        # Only fetch student if belongs to this mentor
-        student = get_object_or_404(StudentRecord, st_id=st_id, mentor=mentor)
-
-        data = {
+            student = StudentRecord.objects.get(st_id=st_id, mentor=mentor_profile)
+        except StudentRecord.DoesNotExist:
+            return Response({"error": "Student not found or you do not have access"}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Prepare your response data
+        result = {
             "st_id": student.st_id,
             "name": student.name,
             "attendance": student.attendance,
@@ -135,15 +141,29 @@ class SingleStudentRecordView(APIView):
             "fees_paid": student.fees_paid,
             "backlogs": student.backlogs,
             "prediction": student.prediction,
-            "current_cgpa": getattr(student, "current_cgpa", None),
-            "branch": getattr(student, "branch", ""),
-            "batch": getattr(student, "batch", ""),
-            "enrollment": getattr(student, "enrollment", ""),
-            "guardian_name": getattr(student, "guardian_name", ""),
-            "guardian_mobile": getattr(student, "guardian_mobile", ""),
+            "risk_level": student.risk_level,
+            "predicted_label": student.predicted_label,
+            "prediction_percentage": student.prediction_percentage,
+            "guardian_name": student.guardian_name,
+            "guardian_contact": student.guardian_contact,
+            "branch": student.branch,
+            "batch": student.batch,
+            "enrolment_no": student.enrolment_no,
+            "current_cgpa": student.current_cgpa,
+            "img": student.img.url if student.img else None,
         }
+        return Response(result, status=status.HTTP_200_OK)
+    
+    def patch(self, request, st_id=None):
+        student = get_object_or_404(StudentRecord, st_id=st_id, mentor=request.user.profile)
+        data = request.data
+        # partial update: only update fields sent in request.data
+        for field, value in data.items():
+            if hasattr(student, field):
+                setattr(student, field, value)
+        student.save()
+        return Response({"message": "Student record updated successfully."}, status=status.HTTP_200_OK)
 
-        return Response(data, status=status.HTTP_200_OK)
 
 
 
@@ -195,6 +215,8 @@ class StudentRecordView(APIView):
                 "enrolment_no": student.enrolment_no,
                 "current_cgpa": student.current_cgpa,
                 "img": student.img.url if student.img else None,
+                "date": student.date.strftime("%d/%m/%Y") if student.date else None,
+                "status": student.status,
             })
         return Response(result, status=status.HTTP_200_OK)
 
@@ -409,7 +431,7 @@ class StudentRemarksView(APIView):
             data.append({
                 "id": r.id,
                 "text": r.text,
-                "date": localtime(r.date).strftime("%d/%m/%Y, %I:%M %p"),
+                "date": localtime(r.created_at).strftime("%d/%m/%Y, %I:%M %p"),
                 "counselor": r.counselor_name,
             })
         return Response(data, status=status.HTTP_200_OK)
@@ -434,8 +456,15 @@ class StudentRemarksView(APIView):
 
 # Risk Analytics API
 class RiskAnalyticsView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        students = StudentRecord.objects.all()
+        try:
+            profile = Profile.objects.get(user=request.user)
+        except Profile.DoesNotExist:
+            return Response({"error": "Mentor profile not found."}, status=404)
+
+        students = StudentRecord.objects.filter(mentor=profile)
 
         risk_counts = {
             "High Risk": 0,
@@ -453,7 +482,6 @@ class RiskAnalyticsView(APIView):
                 continue
 
             try:
-                # New structure: prediction is a dict
                 risk_level = prediction.get("risk_level")
                 prediction_percentage = prediction.get("prediction_percentage", 0)
 
@@ -472,19 +500,60 @@ class RiskAnalyticsView(APIView):
             "average_risk_score": round(average_score, 2),
             "risk_distribution": risk_counts
         })
+
     
-class SendSMSView(APIView):
+
+from .email_utils import send_email  # import your email helper    
+from django.utils import timezone
+
+class SendEmailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        phone = request.data.get("phone")
+        email = request.data.get("email")
+        subject = request.data.get("subject")
         message = request.data.get("message")
+        student_id = request.data.get("student_id")
 
-        if not phone or not message:
-            return Response({"error": "Phone number and message are required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not email or not subject or not message or not student_id:
+            return Response(
+                {"error": "Email, subject, message and student_id are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        success = send_sms(phone, message)
+        success = send_email(email, subject, message)
+
+        try:
+            student = StudentRecord.objects.get(st_id=student_id)
+        except StudentRecord.DoesNotExist:
+            return Response(
+                {"error": "Student not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
         if success:
-            return Response({"status": "SMS sent successfully."}, status=status.HTTP_200_OK)
+            # Create notification log
+            EmailNotification.objects.create(
+                student=student,
+                recipient_email=email,
+                subject=subject,
+                message=message,
+                status="Sent",
+            )
+
+            # Update student status and date
+            student.status = "Email Sent"
+            student.date = timezone.now()
+            student.save()
+
+            return Response({"status": "Email sent successfully."}, status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Failed to send SMS."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Log failure notification
+            EmailNotification.objects.create(
+                student=student,
+                recipient_email=email,
+                subject=subject,
+                message=message,
+                status="Failed",
+            )
+            return Response({"error": "Failed to send email."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -1,7 +1,7 @@
 /* ✅ General Reset */
 * {
-  margin: 0;
-  padding: 0;
+  /* margin: 0;
+  padding: 0; */
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
@@ -14,7 +14,7 @@ html {
 .app-container {
   width: 100%;
   min-height: 100vh;
-  background: #f9f9f9;
+  background: #ffff;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -214,6 +214,7 @@ html {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   scroll-margin-top: 100px;
+  transition: transform 0.5s ease, box-shadow 0.5s ease, opacity 0.8s ease;
 }
 
 .Alert-section .-content {

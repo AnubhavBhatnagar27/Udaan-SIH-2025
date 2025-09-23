@@ -1,54 +1,32 @@
-/* ================== Global Container ================== */
-.app-container {
-  display: flex;
-  min-height: 100vh;
-  height: 100vh;
-  font-family: "Inter", sans-serif;
-  color: #111827;
-  background: #f8f9fd;
-}
-
-/* ================== Sidebar (omitted for brevity if not used here) ================== */
-
-/* ================== Main Content ================== */
-.main-content {
-  flex: 1;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-left: 6rem;
-  transition: margin-left 0.3s ease;
-}
-
-/* ================== Profile Section ================== */
+/* ---------------- Profile Section ---------------- */
 .profile-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: #fff;
   border-radius: 1rem;
-  padding: 2rem 2.5rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  min-height: 220px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   gap: 2rem;
   animation: fadeIn 0.6s ease;
-  flex-wrap: wrap;
+  min-width: 92%;
+  max-width: 18000000000000000px;
+  margin: 2rem auto;
 }
 
 .profile-left {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 1.8rem;
+  gap: 2.5rem;
+  left: 50px;
 }
 
 .profile-avatar {
   width: 7rem;
   height: 7rem;
   border-radius: 50%;
+  object-fit: cover;
   border: 3px solid #2563eb;
-  background-size: cover;
-  background-position: center;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -67,74 +45,43 @@
 .profile-info p {
   font-size: 0.9rem;
   color: #374151;
-  margin: 0.2rem 0;
-}
-
-/* ----- Upload Box ----- */
-.profile-right {
-  margin-left: auto;
+  margin: 0.5rem 0;
 }
 
 .upload-box {
-  background: #fff;
-  border: 2px dashed #1e6fff;
+  left: -23px;
+  height: 270px;
+  background: #f9fafb;
+  border: 2px dashed #d1d5db;
+  padding: 0rem;
   border-radius: 1rem;
-  padding: 2rem;
   text-align: center;
-  width: 350px;
+  width: 280px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.8rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  gap: 0.6rem;
+  transition: background 0.3s ease;
   position: relative;
-  transition: all 0.3s ease;
-}
-
-.upload-box:hover {
-  background: #f9fbff;
-  border-color: #2563eb;
-  transform: scale(1.02);
 }
 
 .upload-icon {
   position: absolute;
   top: 12px;
   right: 12px;
-  width: 28px;
-  height: 28px;
+  width: 25px;
+  height: 25px;
   cursor: pointer;
-  opacity: 0.85;
-  transition: 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .upload-icon:hover {
-  opacity: 1;
   transform: scale(1.1);
 }
 
-.upload-box h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-}
-
-.upload-box p {
-  font-size: 0.9rem;
-  color: #374151;
-  margin: 0;
-}
-
-.upload-box small {
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
-.upload-actions {
-  display: flex;
-  gap: 0.8rem;
-  margin-top: 0.5rem;
+.upload-box:hover {
+  background: #f3f4f6;
 }
 
 .upload-btn {
@@ -145,8 +92,6 @@
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.9rem;
-  font-weight: 500;
 }
 
 .upload-btn:hover {
@@ -154,35 +99,49 @@
   transform: translateY(-2px);
 }
 
-/* ================== Risk Analysis ================== */
+/* ---------------- Risk Analysis ---------------- */
 .risk-analysis {
   background: #fff;
   border-radius: 1rem;
   padding: 2rem 3rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  width: 80%;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  width: 92%;
+  max-width: 1800px;
   margin: 0 auto 2rem;
   animation: fadeIn 0.6s ease;
 }
 
 .risk-title {
   font-weight: 700;
-  margin-bottom: 2rem;
-  text-align: center;
-  font-size: 1.8rem;
+  margin-top: -43px;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  position: relative;
+  right: 29px;
+}
+
+.risk-title p {
+  margin-top: -22px;
+  font-weight: 500;
+  font-size: 1.3rem;
+  color: #000000;
 }
 
 .risk-items {
+  margin-right: 115px;
   display: flex;
-  justify-content: space-around;
-  gap: 4rem;
+  justify-content: flex-start;
+  gap: 5rem;
   flex-wrap: wrap;
+  position: relative;
 }
 
 .risk-item {
-  text-align: center;
+  text-align: left;
   flex: 1;
-  min-width: 140px;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
 }
 
 .risk-circle {
@@ -196,25 +155,17 @@
   font-size: 1.5rem;
   margin: auto;
   transition: all 0.3s ease;
-  color: #fff;
+  margin-right: 1rem;
 }
 
 .risk-circle:hover {
   transform: scale(1.15);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-.risk-circle.red {
-  background: #ef4444;
-}
-
-.risk-circle.blue {
-  background: #f59e0b;
-}
-
-.risk-circle.yellow {
-  background: #10b981;
-}
+.risk-circle.red { background: #ef4444; color: #fff; }
+.risk-circle.blue { background: #3b82f6; color: #fff; }
+.risk-circle.yellow { background: #f59e0b; color: #fff; }
 
 .risk-level {
   margin-top: 1rem;
@@ -222,19 +173,45 @@
   font-size: 1rem;
 }
 
-.risk-value {
-  margin-top: 0.25rem;
+.risk-change {
+  margin-top: 0.5rem;
   font-size: 0.85rem;
   color: #6b7280;
 }
 
-/* ================== Student Table ================== */
+/* ---------------- Student Table ---------------- */
 .student-table-container {
   background: #fff;
   border-radius: 1rem;
   padding: 2rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   animation: fadeIn 0.6s ease;
+  width: 92%;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 600px;
+  display: flex;
+  flex-direction: column;
+  margin-top: -30px;
+}
+
+.table-scroll-container {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.table-scroll-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-scroll-container th,
+.table-scroll-container td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
 }
 
 .student-table-header {
@@ -256,13 +233,13 @@
   border-radius: 25px;
   padding: 6px 14px;
   width: 260px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .search-wrapper:hover,
 .search-wrapper:focus-within {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
   border-color: #3b82f6;
 }
 
@@ -334,47 +311,72 @@ td {
 }
 
 .badge {
+  position: relative;
+  left: -27px;
   padding: 0.35rem 0.8rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #fff;
   display: inline-block;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.badge-high {
-  background: #ef4444;
+/* Updated badge mapping for exact risk levels */
+.badge-high-risk { background: #ef4444; }
+.badge-medium-risk { background: #3b82f6; }
+.badge-low-risk { background: #f59e0b; }
+.badge-safe { background: #22c55e; }
+
+/* Risk box */
+.risk-box {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
-.badge-medium {
-  background: #f59e0b;
-}
+/* Updated risk-box color mapping */
+.risk-box.high-risk { background-color: #ef4444; }
+.risk-box.medium-risk { background-color: #3b82f6; }
+.risk-box.low-risk { background-color: #f59e0b; }
+.risk-box.safe { background-color: #22c55e; }
 
-.badge-low {
-  background: #10b981;
-}
-
-.badge-safe {
-  background: #22c55e;
-}
-
-.no-data {
-  text-align: center;
-  color: #9ca3af;
-  font-size: 1rem;
-  padding: 2rem 0;
-}
-
-/* ================== Animations ================== */
+/* ---------------- Animation ---------------- */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------------- Main Content ---------------- */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  width: calc(108% - 5rem);  
+  gap: 2rem;
+  margin-left: 5rem;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar:hover ~ .main-content {
+  margin-left: 14rem;
+}
+
+/* Profile & risk boxes width adjustments */
+.profile-section {
+  height: 280px;
+  width: 81%;
+  max-width: 1600px;
+  margin: -1rem auto;
+}
+
+.risk-analysis {
+  height: 250px;
+  width: 80%;
+  max-width: 1600px;
+  margin: 22px auto 2rem;
 }

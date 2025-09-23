@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/StudentCard.css";
+const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function StudentCard({ student }) {
   if (!student) {
@@ -52,7 +53,7 @@ export default function StudentCard({ student }) {
       <div className="guardian-section">
         <h4>👨‍👩‍👧 Guardian Details</h4>
         <p><strong>Name:</strong> {student.guardian_name}</p>
-        <p><strong>Mobile No:</strong> {student.guardian_contact}</p>
+        <p><strong>Email ID:</strong> {student.guardian_contact}</p>
       </div>
     </div>
   );

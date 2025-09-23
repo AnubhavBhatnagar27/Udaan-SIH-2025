@@ -38,13 +38,16 @@
   font-family: monospace;
 }
 
-.sidebar-logo {
-  width: 40px;
+
+ .sidebar-logo {
+  width: 90px; /* pehle 70px tha, ab bada kar diya */
   transition: all 0.3s ease;
 }
 
+
+
 .sidebar:hover .sidebar-logo {
-  width: 3.5rem;
+  width: 120px; /* hover pe aur bada dikhe */
 }
 
 /* Navigation */

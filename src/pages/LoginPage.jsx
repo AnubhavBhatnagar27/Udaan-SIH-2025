@@ -13,6 +13,7 @@ const LoginPage = () => {
 
   const [signupData, setSignupData] = useState({
     fullName: '',
+    instituteName: '',
     employeeId: '',
     branch: '',
     email: '',
@@ -86,6 +87,7 @@ const LoginPage = () => {
         body: JSON.stringify({
           username: signupData.email,
           fullName: signupData.fullName,
+          instituteName: signupData.instituteName,
           employeeId: signupData.employeeId,
           branch: signupData.branch,
           password: signupData.password,
@@ -181,6 +183,15 @@ const LoginPage = () => {
               name="fullName"
               placeholder="Enter your full name"
               value={signupData.fullName}
+              onChange={handleSignupChange}
+              required
+            />
+            <label>Institute Name</label>
+            <input
+              type="text"
+              name="instituteName"
+              placeholder="Enter your Institute name"
+              value={signupData.instituteName}
               onChange={handleSignupChange}
               required
             />

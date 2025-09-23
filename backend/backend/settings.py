@@ -15,9 +15,8 @@ SECRET_KEY = 'django-insecure-2w_yq$cq&wzz2480y_d&m*8wabd%19^1w2evyxj7n(fieq1*te
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'udaan-sih-2025.onrender.com').split(',')
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'udaan-sih-2025.onrender.com,127.0.0.1,localhost:3000').split(',')
 
-FAST2SMS_API_KEY=os.getenv("FAST2SMS_API_KEY","63XGTKBDVFeMUbNidClHEIWAfqv485kZPmuLSYcny2sQgpOtxwt0fRy1ZYoW45njSpNAVabmOMKQLdEX")
 
 # Application definition
 

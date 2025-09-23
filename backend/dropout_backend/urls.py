@@ -12,5 +12,5 @@ urlpatterns = [
     path('api/mentors/', MentorView.as_view()),
     path('api/upload/', UploadCSVView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
-    path('api/send-sms/', SendSMSView().as_view()),
+    path('api/send-email/', SendEmailView.as_view(), name='send-email'),
 ]

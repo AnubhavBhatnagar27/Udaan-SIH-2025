@@ -1,68 +1,88 @@
-/* ✅ Global Fix – Page ko scroll hone se roko */
+/* ==============================
+   Notification Page – Full Screen Layout
+   Optimized to match Counseling theme
+   ============================== */
+
+/* 🌐 Global Fix – Disable page scroll */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  /* overflow: hidden; 🔥 Poore page me scroll disable */
   font-family: Arial, sans-serif;
+  overflow: hidden; /* Page scroll disabled */
+  background: #f7f7f7; /* Match counseling bg-light */
 }
 
-/* ✅ Main Container – Full Screen + Center Content */
+/* 🏠 Main Container – White box inside gray background */
 .notification-container {
-  background: #f5f6f8;
+  background: #f5f6f8; /* Light gray background */
   display: flex;
   flex-direction: column;
-  height: 100vh;        /* 🔥 Fixed full screen height */
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;        /* Fixed full screen height */
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 0 auto;       /* Center horizontally */
+  padding: 20px 40px;
   box-sizing: border-box;
-  overflow: hidden;     /* Extra scroll avoid */
+  overflow: hidden;     /* Prevent extra scroll */
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* subtle shadow */
 }
 
-/* Page Title */
+/* 📌 Page Title */
 .page-title {
   font-size: 24px;
   font-weight: bold;
-  color: #111827;
   margin-bottom: 20px;
+  color: #111827; /* Dark text */
+  width: 100%;
+  text-align: left;
 }
 
-/* Stats Section (Top Cards) */
+/* 📊 Stats Cards */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 15px;
   margin-bottom: 20px;
-  flex-shrink: 0; /* ✅ Hamesha visible rahe */
+  width: 100%;
+  flex-shrink: 0; /* Always visible */
 }
 
 .stat-card {
-  background: #fff;
-  padding: 15px;
+  background: #fff; /* White box */
   border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 15px;
   text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
 .stat-label {
-  color: #6b7280;
+  color: #6b7280; /* gray-500 */
   font-weight: 600;
   margin-bottom: 5px;
+  font-size: 14px;
 }
 
 .stat-value {
   font-size: 28px;
   font-weight: bold;
-  color: #111827;
+  color: #111827; /* dark */
 }
 
 .stat-value.completed {
-  color: #16a34a;
+  color: #16a34a; /* green-600 */
 }
 
 .stat-value.pending {
-  color: #f59e0b;
+  color: #f59e0b; /* amber-500 */
 }
 
 /* Progress Card */
@@ -72,45 +92,49 @@ html, body {
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   margin-bottom: 20px;
-  flex-shrink: 0; /* ✅ Fixed position feel */
+  flex-shrink: 0; /* Fixed position feel */
+  width: 100%;
 }
 
 .progress-label {
   font-size: 13px;
-  color: #374151;
+  color: #374151; /* gray-700 */
   margin-bottom: 5px;
 }
 
 .progress-bar {
-  background: #e5e7eb;
+  background: #e5e7eb; /* gray-200 */
   height: 16px;
   border-radius: 8px;
   overflow: hidden;
 }
 
 .progress-fill {
-  background: #22c55e;
+  background: #22c55e; /* green-500 */
   height: 100%;
   border-radius: 8px;
 }
 
-/* Table Header (Title + Search) */
+/* 📝 Table Header */
 .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  width: 100%;
   padding: 0 5px;
+  margin-bottom: 12px;
+  border-radius: 12px;
   flex-shrink: 0;
 }
 
 .table-title {
   font-size: 18px;
   font-weight: 600;
-  color: #111827;
+  color: #111827; /* dark */
+  margin: 0;
 }
 
-/* Search Bar */
+/* 🔍 Search Box */
 .search-bar {
   display: flex;
   align-items: center;
@@ -122,7 +146,7 @@ html, body {
 }
 
 .search-icon {
-  color: #9ca3af;
+  color: #9ca3af; /* gray-400 */
   margin-right: 8px;
 }
 
@@ -131,70 +155,70 @@ html, body {
   outline: none;
   flex: 1;
   font-size: 14px;
+  background: transparent;
 }
 
-/* ✅ Table Wrapper – Sirf yaha scroll hoga */
+/* 📋 Table Wrapper – Scroll Only Here */
 .table-wrapper {
-  flex: 1;                /* ✅ Bachi hui height le lo */
-  background: #fff;
+  flex: 1;                /* take remaining height */
+  width: 100%;
+  background: #fff;       /* White box */
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   padding: 0;
   margin-top: 10px;
-  overflow-y: auto;       /* ✅ Scroll only y-axis */
+  overflow-y: auto;       /* Scroll only vertically */
   overflow-x: hidden;     /* No horizontal scroll */
+  max-height: 60vh;       /* Similar to counseling */
 }
 
-/* Scrollbar styles */
+/* Scrollbar Styling */
 .table-wrapper::-webkit-scrollbar {
   width: 8px;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #cbd5e1; /* gray-300 */
   border-radius: 8px;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #94a3b8; /* gray-400 */
 }
 
-/* Table */
+/* 🧾 Student Table */
 .student-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  table-layout: fixed;   /* Fixed layout to prevent horizontal overflow */
+  table-layout: fixed;   /* Prevent horizontal overflow */
 }
 
-/* Header Row */
+/* Table Header Row */
 .student-table thead {
-  background-color: #f1f5f9;
+  background-color: #f1f5f9; /* gray-100 */
 }
 
 .student-table th {
   font-weight: 600;
-  color: #374151;
+  color: #374151; /* gray-700 */
   padding: 14px 20px;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
- 
 }
-
-
 
 /* Data Rows */
 .student-table td {
-  /* padding: 14px 20px; */
-  border-bottom: 1px solid #e5e7eb;
-  color: #1f2937;
+  border-bottom: 1px solid #e5e7eb; /* gray-200 */
+  color: #1f2937; /* gray-800 */
   white-space: normal;         /* Allow wrapping */
   vertical-align: top;         /* Align content at the top */
   overflow-wrap: break-word;   /* Break long words */
   text-overflow: ellipsis;
+  padding: 14px 20px;
 }
 
 /* Right-align specific columns (Notification Date & Recipient Number) */
@@ -214,4 +238,166 @@ html, body {
 /* Remove border from last row */
 .student-table tr:last-child td {
   border-bottom: none;
+}
+
+/* Status badges (like counseling) */
+.status {
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-weight: 500;
+  display: inline-block;
+  transition: 0.2s ease;
+}
+
+.status.done {
+  background: #d4edda; /* light green bg */
+  color: #155724;       /* dark green text */
+}
+
+.status.pending {
+  background: #fff3cd; /* light yellow bg */
+  color: #856404;       /* dark yellow text */
+}
+
+/* Buttons */
+.status-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s ease;
+}
+
+.status-btn.status-pending {
+  background: #ffeaa7;
+  color: #2d3436;
+}
+
+.status-btn.status-done {
+  background: #55efc4;
+  color: #2d3436;
+}
+
+/* No data message */
+.no-data {
+  text-align: center;
+  padding: 15px;
+  color: #e74c3c;
+  font-weight: bold;
+  width: 100%;
+}
+
+/* =======================
+   Send Alert Button Styling – Updated Look
+   ======================= */
+.send-alert-btn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(90deg, #2ecc71, #27ae60); /* primary gradient */
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* stronger shadow */
+  transition: all 0.3s ease;
+  text-transform: uppercase; /* modern look */
+}
+
+.send-alert-btn:hover {
+  transform: translateY(-2px) scale(1.02); /* subtle lift + scale */
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  background: linear-gradient(90deg, #27ae60, #2ecc71); /* gradient reverse */
+}
+
+.send-alert-btn:disabled {
+  background: #94d3a2; /* lighter green for disabled */
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  opacity: 0.8; /* subtle fade */
+}
+
+/* Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  padding: 25px 30px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal h2 {
+  margin-bottom: 20px;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.modal input[type="text"],
+.modal input[type="email"],
+.modal textarea {
+  margin-top: 5px;
+  padding: 8px 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.modal-actions button {
+  padding: 8px 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-actions button:first-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.modal-actions button:last-child {
+  background-color: #ccc;
+  color: black;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr; /* stack stats vertically */
+  }
+  .search-bar {
+    width: 100%;
+  }
+  .notification-container {
+    padding: 20px;
+  }
 }

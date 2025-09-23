@@ -5,8 +5,7 @@ import { Search } from "lucide-react";
 import uploadIcon from "../assets/upload-icon.png";
 import "../styles/Dashboard.css";
 
-const apiUrl = process.env.REACT_APP_API_URL; // ✅ declared once, reused everywhere
-
+const apiUrl = process.env.REACT_APP_API_URL;
 // Profile Section
 function ProfileSection() {
   const [mentor, setMentor] = useState(null);
@@ -35,6 +34,8 @@ function ProfileSection() {
         setMentor(null);
       });
   }, []);
+
+
 
   if (!mentor) return <div>Loading mentor profile...</div>;
 
@@ -75,11 +76,11 @@ function ProfileSection() {
     try {
       console.log("Uploading file:", selectedFile);
       const response = await axios.post(`${apiUrl}/api/upload/`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          // Content-Type is automatically set by Axios for FormData
-        },
-      });
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // Do NOT set Content-Type manually, let Axios handle it.
+      },
+    });
 
       if (response.status === 201) {
         alert("Upload successful!");
@@ -153,8 +154,13 @@ function RiskAnalysis() {
   const [riskSummary, setRiskSummary] = useState(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("accessToken");
     axios
-      .get(`${apiUrl}/api/risk-analytics/`)
+      .get(`${apiUrl}/api/risk-analytics/`,{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => setRiskSummary(res.data))
       .catch((err) => console.error("Error fetching risk summary:", err));
   }, []);
@@ -191,16 +197,15 @@ function RiskAnalysis() {
   );
 }
 
-// Student Table
+// Student Table (✅ Fixed)
 function StudentTable() {
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-
     axios
-      .get(`${apiUrl}/api/students/`, {
+      .get(`${apiUrl}/api/students/`,{
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -212,10 +217,12 @@ function StudentTable() {
       .catch((err) => console.error("Error fetching students:", err));
   }, []);
 
+  // First filter by search
   const filtered = students.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Then sort the filtered list alphabetically by name
   const sortedFilteredStudents = [...filtered].sort((a, b) =>
     a.name.localeCompare(b.name)
   );
@@ -277,6 +284,7 @@ function StudentTable() {
     </div>
   );
 }
+
 
 // Main Dashboard Component
 export default function Dashboard() {
