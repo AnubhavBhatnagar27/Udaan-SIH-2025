@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/StudentProfilePage.css";
-
+const apiUrl = process.env.REACT_APP_API_URL;
 export default function StudentProfile() {
   const { id:st_id } = useParams(); // student ID from URL
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ export default function StudentProfile() {
 
   // Fetch student data from backend
   useEffect(() => {
-  fetch(`http://localhost:8000/api/students/${st_id}/`)
+  fetch(`${apiUrl}/api/students/${st_id}/`)
     .then((res) => {
       if (!res.ok) throw new Error("Student not found");
       return res.json();

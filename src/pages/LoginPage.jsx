@@ -2,17 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/LoginPage.css';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const LoginPage = () => {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('login');
-
-  // Updated: loginUsername instead of loginEmail
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-
-  // Removed rememberMe from login for simplicity (add if backend supports it)
-  // const [loginRememberMe, setLoginRememberMe] = useState(false);
 
   const [signupData, setSignupData] = useState({
     fullName: '',
@@ -35,11 +32,11 @@ const LoginPage = () => {
     setSuccessMsg('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/login/', {
+      const response = await fetch(`${apiUrl}/api/login/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: loginUsername,  // sending username, not email
+          username: loginUsername,
           password: loginPassword,
         }),
       });
@@ -48,13 +45,12 @@ const LoginPage = () => {
       console.log('Login response:', data);
 
       if (response.ok && data.access && data.refresh) {
-        // Save tokens and username to localStorage
         localStorage.setItem('accessToken', data.access);
         localStorage.setItem('refreshToken', data.refresh);
         localStorage.setItem('username', loginUsername);
 
         setSuccessMsg('Login successful!');
-        navigate('/dashboard');  // redirect to dashboard
+        navigate('/dashboard');
       } else {
         setError(data.message || 'Invalid username or password.');
       }
@@ -84,15 +80,14 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/login/create/', {
+      const response = await fetch(`${apiUrl}/api/login/create/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: signupData.email, // Using email as username
+          username: signupData.email,
           fullName: signupData.fullName,
           employeeId: signupData.employeeId,
           branch: signupData.branch,
-          // email: signupData.email,
           password: signupData.password,
           academicSession: signupData.academicSession,
         }),
@@ -173,8 +168,6 @@ const LoginPage = () => {
                 required
               />
             </div>
-
-            {/* You can add remember me checkbox here if needed */}
 
             <button type="submit" className="login-button" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}

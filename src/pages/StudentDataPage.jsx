@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import StudentCard from "../pages/StudentCard";
 import "../styles/StudentDataPage.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
 export default function StudentDataPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -22,10 +23,10 @@ export default function StudentDataPage() {
         }
         try {
           const [studentsRes, mentorRes] = await Promise.all([
-            fetch("http://localhost:8000/api/students/", {
+            fetch(`${apiUrl}/api/students/`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
-            fetch("http://localhost:8000/api/mentors/", {
+            fetch(`${apiUrl}/api/mentors/`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
           ]);

@@ -3,6 +3,8 @@ import { Search } from "lucide-react";
 import "../styles/Notification.css";
 import axios from "axios";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export default function Notification() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +16,7 @@ export default function Notification() {
     const fetchStudents = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        const response = await axios.get("http://localhost:8000/api/students/", {
+        const response = await axios.get(`${apiUrl}/api/students/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setStudents(response.data);
@@ -55,7 +57,7 @@ export default function Notification() {
       };
 
       // Call your backend SMS send API (make sure your backend supports this)
-      const response = await axios.post("http://localhost:8000/api/send-sms", payload, {
+      const response = await axios.post(`${apiUrl}/api/send-sms`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

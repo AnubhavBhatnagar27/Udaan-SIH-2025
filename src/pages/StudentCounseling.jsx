@@ -20,12 +20,14 @@ export default function StudentCounseling() {
     });
   };
 
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   // Fetch students from the backend
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        const response = await axios.get("http://localhost:8000/api/students/", {
+        const response = await axios.get(`${apiUrl}/api/students/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -75,7 +77,7 @@ export default function StudentCounseling() {
     try {
       // Assuming your backend accepts a POST request to add a remark
       await axios.post(
-        `http://localhost:8000/api/students/${selectedStudent.st_id}/remarks/`,
+        `${apiUrl}/api/students/${selectedStudent.st_id}/remarks/`,
         remarkObj,
         {
           headers: {
