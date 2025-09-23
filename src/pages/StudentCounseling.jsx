@@ -1,68 +1,111 @@
 // src/pages/StudentCounseling.jsx
 import React, { useState, useEffect } from "react";
 import "../styles/StudentCounseling.css";
-import axios from "axios"; // Import axios for API requests
+import axios from "axios";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function StudentCounseling() {
   const [search, setSearch] = useState("");
-  const [students, setStudents] = useState([]); // Empty array initially
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [newRemark, setNewRemark] = useState("");
   const [currentMentor, setCurrentMentor] = useState({ name: "Unknown" });
 
-
-  // Format date function to show current date in readable format
+  // Format date function (fall back if invalid)
   const formatDate = (date) => {
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-useEffect(() => {
-  const fetchData = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setError("No access token found. Please login.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const [studentsRes, mentorRes] = await Promise.all([
-        fetch("${apiUrl}/api/students/", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch("${apiUrl}/api/mentors/", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
-
-      if (!studentsRes.ok) throw new Error("Failed to fetch students");
-      if (!mentorRes.ok) throw new Error("Failed to fetch mentor data");
-
-      const studentsData = await studentsRes.json();
-      const mentorData = await mentorRes.json();
-
-      setStudents(studentsData);
-      setCurrentMentor(mentorData); // Assuming { name, id, institute, etc. }
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
+      return new Date(date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch {
+      return "-";
     }
   };
 
-  fetchData();
-}, []);
+  // Utility: Check if API response is JSON before parsing (to avoid unexpected '<')
+  const isJSON = (response) => {
+    const contentType = response.headers["content-type"] || "";
+    return contentType.includes("application/json");
+  };
 
-// Empty dependency array ensures this only runs once when the component mounts
+  // Load students & mentor on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
 
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setError("No access token found. Please login.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Use axios all at once
+        const [studentsRes, mentorRes] = await Promise.all([
+          axios.get(`${apiUrl}/api/students/`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${apiUrl}/api/mentors/`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        if (
+          !studentsRes.data ||
+          !Array.isArray(studentsRes.data) ||
+          !mentorRes.data
+        ) {
+          throw new Error("Invalid API response");
+        }
+
+        // Apply 8-day overdue logic locally to students' status
+        const updatedStudents = studentsRes.data.map((s) => {
+          if (
+            s.status === "Pending" &&
+            s.counseling_date &&
+            new Date() - new Date(s.counseling_date) > 8 * 24 * 60 * 60 * 1000
+          ) {
+            return { ...s, status: "Overdue" };
+          }
+          return s;
+        });
+
+        setStudents(updatedStudents);
+        setCurrentMentor(mentorRes.data);
+      } catch (err) {
+        // Axios errors might have response with HTML (like 404 page) - catch gracefully
+        if (axios.isAxiosError(err) && err.response) {
+          const ct = err.response.headers["content-type"] || "";
+          if (!ct.includes("application/json")) {
+            setError(
+              `API returned non-JSON response (${err.response.status}). Please check your API URL or server.`
+            );
+          } else {
+            setError(
+              err.response.data?.message ||
+                err.message ||
+                "Failed to fetch data from server"
+            );
+          }
+        } else {
+          setError(err.message || "Unexpected error");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Search filtering
   const filtered = students.filter((s) => {
     const name = s.name ? s.name.toLowerCase() : "";
     const enrolment_no = s.enrolment_no ? s.enrolment_no.toLowerCase() : "";
@@ -71,85 +114,120 @@ useEffect(() => {
     return name.includes(searchTerm) || enrolment_no.includes(searchTerm);
   });
 
-  // New function to update status on button click
-  const updateStatus = (index, newStatus) => {
-    setStudents((prev) =>
-      prev.map((s, i) => (i === index ? { ...s, status: newStatus } : s))
-    );
+  // Status update handler
+  const updateStatus = async (index, newStatus) => {
+    // Optimistic UI update
+    const updatedStudents = [...students];
+    updatedStudents[index] = { ...updatedStudents[index], status: newStatus };
+    setStudents(updatedStudents);
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setError("No access token found. Please login.");
+      return;
+    }
+
+    try {
+      await axios.patch(
+        `${apiUrl}/api/students/${updatedStudents[index].st_id}/`,
+        { status: newStatus },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    } catch (err) {
+      setError("Failed to update status. Please try again.");
+      // Rollback on error
+      setStudents(students);
+    }
   };
 
+  // Open remark modal and fetch remarks
   const openRemarkModal = async (student) => {
-  setSelectedStudent(null); // clear old selection to avoid stale UI
-  setNewRemark("");
+    setSelectedStudent(null);
+    setNewRemark("");
+    setError(null);
 
-  const token = localStorage.getItem("accessToken");
-  try {
-    const res = await axios.get(
-      `${apiUrl}/api/students/${student.st_id}/remarks/`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setError("No access token found. Please login.");
+      return;
+    }
+
+    try {
+      const res = await axios.get(
+        `${apiUrl}/api/students/${student.st_id}/remarks/`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!Array.isArray(res.data)) {
+        setSelectedStudent({ ...student, remarks: [] });
+        return;
       }
-    );
 
-    // Add fetched remarks to student and set selectedStudent
-    setSelectedStudent({ ...student, remarks: res.data });
-  } catch (err) {
-    console.error("Failed to fetch remarks:", err);
-    setError("Failed to load remarks");
-    // Still open modal but with empty remarks
-    setSelectedStudent({ ...student, remarks: [] });
-  }
-};
-
-
-  const addRemark = async () => {
-  if (!newRemark.trim()) return;
-
-  const token = localStorage.getItem("accessToken");
-
-  const remarkPayload = {
-    text: newRemark,
-    counselor: currentMentor.name || "Unknown", // Or whatever your logged-in mentor is
+      setSelectedStudent({ ...student, remarks: res.data });
+    } catch (err) {
+      setError("Failed to load remarks.");
+      setSelectedStudent({ ...student, remarks: [] });
+    }
   };
 
-  try {
-    // 1. Post the new remark to the backend
-    await axios.post(
-      `${apiUrl}/api/students/${selectedStudent.st_id}/remarks/`,
-      remarkPayload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+  // Add a new remark
+  const addRemark = async () => {
+    if (!newRemark.trim()) return;
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setError("No access token found. Please login.");
+      return;
+    }
+
+    const remarkPayload = {
+      text: newRemark.trim(),
+      counselor: currentMentor.name || "Unknown",
+    };
+
+    try {
+      await axios.post(
+        `${apiUrl}/api/students/${selectedStudent.st_id}/remarks/`,
+        remarkPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Refresh remarks after add
+      const remarksRes = await axios.get(
+        `${apiUrl}/api/students/${selectedStudent.st_id}/remarks/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setSelectedStudent((prev) => ({
+        ...prev,
+        remarks: remarksRes.data,
+      }));
+
+      setNewRemark("");
+    } catch (err) {
+      setError("Failed to add remark.");
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error)
+    return (
+      <div style={{ color: "red", padding: "1rem" }}>
+        <strong>Error:</strong> {error}
+      </div>
     );
-
-    // 2. Fetch updated remarks from backend
-    const remarksRes = await axios.get(
-      `${apiUrl}/api/students/${selectedStudent.st_id}/remarks/`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    // 3. Update student with fresh remarks
-    setSelectedStudent((prev) => ({
-      ...prev,
-      remarks: remarksRes.data,
-    }));
-
-    setNewRemark("");
-  } catch (error) {
-    console.error("Error adding remark:", error.response?.data || error.message);
-    setError("Failed to add remark");
-  }
-};
-
-
-  if (loading) return <div>Loading...</div>; // Show loading message while fetching data
-  if (error) return <div>{error}</div>; // Show error if data fetching fails
 
   return (
     <div className="counseling-page">
@@ -182,7 +260,8 @@ useEffect(() => {
             Counseling Completed:{" "}
             {students.length > 0
               ? Math.round(
-                  (students.filter((s) => s.status === "Done").length / students.length) * 100
+                  (students.filter((s) => s.status === "Done").length / students.length) *
+                    100
                 )
               : 0}
             %
@@ -193,7 +272,8 @@ useEffect(() => {
               style={{
                 width: `${
                   students.length > 0
-                    ? (students.filter((s) => s.status === "Done").length / students.length) * 100
+                    ? (students.filter((s) => s.status === "Done").length / students.length) *
+                      100
                     : 0
                 }%`,
               }}
@@ -229,10 +309,10 @@ useEffect(() => {
               <tbody>
                 {filtered.length > 0 ? (
                   filtered.map((s, index) => (
-                    <tr key={index}>
+                    <tr key={s.st_id || index}>
                       <td>{s.name || "-"}</td>
                       <td>{s.enrolment_no || "-"}</td>
-                      <td>{formatDate(new Date())}</td> {/* Show current date here */}
+                      <td>{formatDate(s.counseling_date)}</td>
                       <td>
                         <div className="status-buttons">
                           {["Done", "Pending", "Overdue"].map((statusOption) => (
@@ -249,7 +329,10 @@ useEffect(() => {
                         </div>
                       </td>
                       <td>
-                        <button className="remark-btn" onClick={() => openRemarkModal(s)}>
+                        <button
+                          className="remark-btn"
+                          onClick={() => openRemarkModal(s)}
+                        >
                           View/Add Remark
                         </button>
                       </td>
@@ -269,14 +352,23 @@ useEffect(() => {
 
         {/* Remark Modal */}
         {selectedStudent && (
-          <div className="modal-overlay" onClick={() => setSelectedStudent(null)}>
-            <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-overlay"
+            onClick={() => setSelectedStudent(null)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              className="modal-box"
+              onClick={(e) => e.stopPropagation()}
+              tabIndex={-1}
+            >
               <h3>Remarks - {selectedStudent.name || "-"}</h3>
               <ul className="remark-history">
                 {selectedStudent.remarks && selectedStudent.remarks.length > 0 ? (
                   selectedStudent.remarks.map((r, i) => (
                     <li key={i}>
-                      <strong>{r.counselor || "Unknown"}</strong> ({r.date || "Unknown"}):{" "}
+                      <strong>{r.counselor || "Unknown"}</strong> ({formatDate(r.date)}):{" "}
                       {r.text || ""}
                     </li>
                   ))
@@ -291,11 +383,20 @@ useEffect(() => {
                   value={newRemark}
                   placeholder="Add new remark..."
                   onChange={(e) => setNewRemark(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") addRemark();
+                  }}
                 />
-                <button onClick={addRemark}>➕ Add</button>
+                <button onClick={addRemark} disabled={!newRemark.trim()}>
+                  ➕ Add
+                </button>
               </div>
 
-              <button className="close-btn" onClick={() => setSelectedStudent(null)}>
+              <button
+                className="close-btn"
+                onClick={() => setSelectedStudent(null)}
+                aria-label="Close remarks modal"
+              >
                 Close
               </button>
             </div>
