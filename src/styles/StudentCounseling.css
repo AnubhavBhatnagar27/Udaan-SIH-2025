@@ -13,7 +13,7 @@
 
 /* ✅ GLOBAL SCROLL FIX (Only for this page) */
 html, body {
-  overflow: hidden; /* ✅ Scroll completely disable */
+  /* overflow: hidden; ✅ Scroll completely disable */
   height: 100%;
 }
 
