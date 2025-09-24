@@ -1,6 +1,8 @@
 from datetime import timedelta
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -181,3 +183,12 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,               # Optional: disables old refresh tokens
     "AUTH_HEADER_TYPES": ("Bearer",),               # Default is "Bearer"
 }
+
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")  # Make sure this env var is set securely
+
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
+DEFAULT_FROM_EMAIL = "udaanbitcrew@gmail.com" # Must be verified in SendGrid
+

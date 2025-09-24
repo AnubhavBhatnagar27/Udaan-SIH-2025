@@ -192,7 +192,7 @@ function RiskAnalysis() {
             <div className={`risk-circle ${colors[riskLabel]}`}>{count}</div>
             <div className="risk-info">
               <p className="risk-level">{riskLabel.toUpperCase()}</p>
-              <p className="risk-value">{count}</p>
+              {/* <p className="risk-value">{count}</p> */}
             </div>
           </div>
         ))}

@@ -184,9 +184,11 @@ class SingleStudentRecordView(APIView):
 
 #         return Response(data, status=status.HTTP_200_OK)
 
+import pandas as pd
+from io import StringIO
+
 class StudentRecordView(APIView):
     permission_classes = [IsAuthenticated]
-
     def get(self, request):
         try:
             profile = Profile.objects.get(user=request.user)
@@ -197,15 +199,14 @@ class StudentRecordView(APIView):
 
         try:
             students = StudentRecord.objects.filter(mentor=profile).select_related('mentor').only(
-                'mentor',
-                'st_id', 'name', 'attendance', 'avg_test_score', 'attempts', 'fees_paid', 
+                'mentor', 'st_id', 'name', 'attendance', 'avg_test_score', 'attempts', 'fees_paid',
                 'backlogs', 'prediction', 'risk_level', 'predicted_label', 'prediction_percentage',
-                'guardian_name', 'guardian_contact', 'branch', 'batch', 'enrolment_no', 
-                'current_cgpa', 'img', 'date', 'status'
+                'guardian_name', 'guardian_contact', 'branch', 'batch', 'enrolment_no', 'current_cgpa',
+                'img', 'date', 'status'
             )
         except Exception as e:
             return Response({"error": f"Error fetching students: {str(e)}"}, status=500)
-        
+
         result = []
         for student in students:
             try:
@@ -216,7 +217,7 @@ class StudentRecordView(APIView):
                         img_url = student.img.url
                     except (ValueError, AttributeError):
                         img_url = None
-                
+
                 # Safely handle date formatting
                 date_str = None
                 if student.date:
@@ -224,7 +225,7 @@ class StudentRecordView(APIView):
                         date_str = student.date.strftime("%d/%m/%Y")
                     except (ValueError, AttributeError):
                         date_str = None
-                
+
                 result.append({
                     "st_id": student.st_id,
                     "name": student.name,
@@ -251,25 +252,34 @@ class StudentRecordView(APIView):
                 print(f"Error processing student {student.st_id}: {e}")
                 # Skip this student and continue with others
                 continue
-        
+
         return Response(result, status=status.HTTP_200_OK)
 
     def post(self, request):
-        # CSV upload
         try:
             profile = Profile.objects.get(user=request.user)
         except Profile.DoesNotExist:
             return Response({"error": "No mentor found for this user"}, status=404)
 
-        csv_file = request.FILES.get('csv_file')
-        if not csv_file:
-            return Response({"error": "CSV file is required"}, status=400)
+        uploaded_file = request.FILES.get('file')  # changed to 'file' to be generic
+        if not uploaded_file:
+            return Response({"error": "File is required"}, status=400)
 
-        decoded_file = csv_file.read().decode('utf-8')
-        io_string = StringIO(decoded_file)
-        reader = csv.DictReader(io_string)
+        filename = uploaded_file.name.lower()
+        try:
+            if filename.endswith(('.xlsx', '.xls')):
+                df = pd.read_excel(uploaded_file)
+            elif filename.endswith('.csv'):
+                # decode and read csv using pandas
+                decoded_file = uploaded_file.read().decode('utf-8')
+                df = pd.read_csv(StringIO(decoded_file))
+            else:
+                return Response({"error": "Unsupported file type. Please upload CSV or Excel files."}, status=400)
+        except Exception as e:
+            return Response({"error": f"Failed to read file: {str(e)}"}, status=400)
+
         created_count = 0
-        for row in reader:
+        for _, row in df.iterrows():
             try:
                 StudentRecord.objects.create(
                     mentor=profile,
@@ -293,11 +303,11 @@ class StudentRecordView(APIView):
                 )
                 created_count += 1
             except Exception as e:
-                # You can log the error or continue
-                print(f"Failed to create student record for row: {row}. Error: {e}")
+                print(f"Failed to create student record for row: {row.to_dict()}. Error: {e}")
                 continue
 
-        return Response({"message": f"Created {created_count} student records"}, status=status.HTTP_201_CREATED)
+        return Response({"message": f"Created {created_count} student records"}, status=201)
+
 
 class UploadCSVView(APIView):
     permission_classes = [IsAuthenticated]
@@ -575,13 +585,14 @@ class SendEmailView(APIView):
         success = send_email(email, subject, message)
 
         try:
-            student = StudentRecord.objects.get(st_id=student_id)
+            student = StudentRecord.objects.filter(st_id=student_id)
+            student = student.first()  # Get the first matching student
         except StudentRecord.DoesNotExist:
             return Response(
                 {"error": "Student not found."},
                 status=status.HTTP_404_NOT_FOUND
             )
-
+        
         if success:
             # Create notification log
             EmailNotification.objects.create(
