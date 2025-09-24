@@ -17,6 +17,7 @@ from rest_framework import status
 
 from .models import StudentRecord, EmailNotification
 from .email_utils import send_email
+from datetime import datetime
 
 # class CreateLogin(APIView):
 #     permission_classes = [AllowAny]
@@ -245,7 +246,7 @@ class StudentRecordView(APIView):
                     "enrolment_no": student.enrolment_no,
                     "current_cgpa": student.current_cgpa,
                     "img": img_url,
-                    "date": date_str,
+                    "date": datetime.now().strftime("%d/%m/%Y"),
                     "status": student.status,
                 })
             except Exception as e:
