@@ -141,9 +141,8 @@
 //   );
 // }
 
-
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "../styles/StudentProfilePage.css";
 import axios from "axios";
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -151,36 +150,12 @@ const apiUrl = process.env.REACT_APP_API_URL;
 export default function StudentProfile() {
   const { st_id } = useParams(); // student ID from URL
   const navigate = useNavigate();
+  const location = useLocation(); // <-- Added this line
+
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-
-
   const [error, setError] = useState(null);
-
-  // Fetch student data from backend
-  const token = localStorage.getItem("accessToken");
-  // useEffect(() => {
-  //   fetch(`http://localhost:8000/api/students/${st_id}/`, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
-  //     .then((res) => {
-  //       if (!res.ok) throw new Error("Student not found");
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       setStudent(data);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //       setStudent(null);
-  //       setLoading(false);
-  //     });
-  // }, [st_id]);
-
 
   useEffect(() => {
     const fetchStudentData = async () => {
@@ -215,6 +190,7 @@ export default function StudentProfile() {
 
     fetchStudentData();
   }, [st_id, location.state]);
+
   // Risk styling
   const riskData = {
     "High Risk": { color: "#ef4444", icon: "⚠️" },
@@ -223,9 +199,13 @@ export default function StudentProfile() {
   };
 
   // Correctly get the prediction string from nested object
-  const prediction = student.prediction?.risk_level || "No Prediction";
+  const prediction = student?.prediction?.risk_level || "No Prediction";
 
   const risk = riskData[prediction] || { color: "#999", icon: "❔" };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!student) return <div>No student data available.</div>;
 
   return (
     <div className="profile-page">
@@ -261,7 +241,9 @@ export default function StudentProfile() {
           </div>
 
           <div
-            className={`risk-badge ${prediction.toLowerCase().replace(/\s+/g, "-")}`}
+            className={`risk-badge ${prediction
+              .toLowerCase()
+              .replace(/\s+/g, "-")}`}
             style={{ backgroundColor: risk.color }}
           >
             {risk.icon} {prediction}
@@ -272,9 +254,9 @@ export default function StudentProfile() {
         <div className="risk-card">
           <h3>Risk Status</h3>
           <p>
-            {student.name} is currently flagged as{" "}
-            <strong>{prediction}</strong>. Based on attendance, test scores,
-            and other metrics, the system predicts academic risk.
+            {student.name} is currently flagged as <strong>{prediction}</strong>.
+            Based on attendance, test scores, and other metrics, the system predicts
+            academic risk.
           </p>
           <p>
             Mentors are alerted, and the student will be invited for a counseling
@@ -291,7 +273,10 @@ export default function StudentProfile() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>📖 Previous Session Remarks</h3>
             <p>No previous remarks available.</p>
-            <button className="close-modal-btn" onClick={() => setShowModal(false)}>
+            <button
+              className="close-modal-btn"
+              onClick={() => setShowModal(false)}
+            >
               ✖ Close
             </button>
           </div>
