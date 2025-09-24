@@ -15,17 +15,22 @@ export default function StudentCounseling() {
   const [currentMentor, setCurrentMentor] = useState({ name: "Unknown" });
 
   // Format date function (fall back if invalid)
-  const formatDate = (date) => {
-    try {
-      return new Date(date).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    } catch {
-      return "-";
-    }
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "-";
+    // Expecting "mm/dd/yyyy"
+    const parts = dateStr.split("/");
+    if (parts.length !== 3) return "-";
+    const [mm, dd, yyyy] = parts;
+    // Create Date with yyyy, mm-1 (month is zero-based), dd
+    const dateObj = new Date(yyyy, mm - 1, dd);
+    if (isNaN(dateObj)) return "-";
+    return dateObj.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
+
 
   // Utility: Check if API response is JSON before parsing (to avoid unexpected '<')
   const isJSON = (response) => {
