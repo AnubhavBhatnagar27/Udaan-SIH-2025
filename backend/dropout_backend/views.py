@@ -192,37 +192,65 @@ class StudentRecordView(APIView):
             profile = Profile.objects.get(user=request.user)
         except Profile.DoesNotExist:
             return Response({"error": "No mentor found for this user"}, status=404)
+        except Exception as e:
+            return Response({"error": f"Error fetching mentor profile: {str(e)}"}, status=500)
 
-        students = StudentRecord.objects.filter(mentor=profile).select_related('mentor').only(
-            'st_id', 'name', 'attendance', 'avg_test_score', 'attempts', 'fees_paid', 
-            'backlogs', 'prediction', 'risk_level', 'predicted_label', 'prediction_percentage',
-            'guardian_name', 'guardian_contact', 'branch', 'batch', 'enrolment_no', 
-            'current_cgpa', 'img', 'date', 'status'
-        )
+        try:
+            students = StudentRecord.objects.filter(mentor=profile).select_related('mentor').only(
+                'st_id', 'name', 'attendance', 'avg_test_score', 'attempts', 'fees_paid', 
+                'backlogs', 'prediction', 'risk_level', 'predicted_label', 'prediction_percentage',
+                'guardian_name', 'guardian_contact', 'branch', 'batch', 'enrolment_no', 
+                'current_cgpa', 'img', 'date', 'status'
+            )
+        except Exception as e:
+            return Response({"error": f"Error fetching students: {str(e)}"}, status=500)
+        
         result = []
         for student in students:
-            result.append({
-                "st_id": student.st_id,
-                "name": student.name,
-                "attendance": student.attendance,
-                "avg_test_score": student.avg_test_score,
-                "attempts": student.attempts,
-                "fees_paid": student.fees_paid,
-                "backlogs": student.backlogs,
-                "prediction": student.prediction,
-                "risk_level": student.risk_level,
-                "predicted_label": student.predicted_label,
-                "prediction_percentage": student.prediction_percentage,
-                "guardian_name": student.guardian_name,
-                "guardian_contact": student.guardian_contact,
-                "branch": student.branch,
-                "batch": student.batch,
-                "enrolment_no": student.enrolment_no,
-                "current_cgpa": student.current_cgpa,
-                "img": student.img.url if student.img else None,
-                "date": student.date.strftime("%d/%m/%Y") if student.date else None,
-                "status": student.status,
-            })
+            try:
+                # Safely handle image URL
+                img_url = None
+                if student.img:
+                    try:
+                        img_url = student.img.url
+                    except (ValueError, AttributeError):
+                        img_url = None
+                
+                # Safely handle date formatting
+                date_str = None
+                if student.date:
+                    try:
+                        date_str = student.date.strftime("%d/%m/%Y")
+                    except (ValueError, AttributeError):
+                        date_str = None
+                
+                result.append({
+                    "st_id": student.st_id,
+                    "name": student.name,
+                    "attendance": student.attendance,
+                    "avg_test_score": student.avg_test_score,
+                    "attempts": student.attempts,
+                    "fees_paid": student.fees_paid,
+                    "backlogs": student.backlogs,
+                    "prediction": student.prediction,
+                    "risk_level": student.risk_level,
+                    "predicted_label": student.predicted_label,
+                    "prediction_percentage": student.prediction_percentage,
+                    "guardian_name": student.guardian_name,
+                    "guardian_contact": student.guardian_contact,
+                    "branch": student.branch,
+                    "batch": student.batch,
+                    "enrolment_no": student.enrolment_no,
+                    "current_cgpa": student.current_cgpa,
+                    "img": img_url,
+                    "date": date_str,
+                    "status": student.status,
+                })
+            except Exception as e:
+                print(f"Error processing student {student.st_id}: {e}")
+                # Skip this student and continue with others
+                continue
+        
         return Response(result, status=status.HTTP_200_OK)
 
     def post(self, request):
