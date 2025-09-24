@@ -197,6 +197,7 @@ class StudentRecordView(APIView):
 
         try:
             students = StudentRecord.objects.filter(mentor=profile).select_related('mentor').only(
+                'mentor',
                 'st_id', 'name', 'attendance', 'avg_test_score', 'attempts', 'fees_paid', 
                 'backlogs', 'prediction', 'risk_level', 'predicted_label', 'prediction_percentage',
                 'guardian_name', 'guardian_contact', 'branch', 'batch', 'enrolment_no', 
