@@ -53,8 +53,12 @@ export default function StudentDataPage() {
 
 
   // Filter students by name based on search input
-  const filteredStudents = students.filter((student) =>
-    student.name.toLowerCase().includes(search.toLowerCase())
+  const filteredStudents = students.filter(
+    (student) =>
+      typeof student === "object" &&
+      student !== null &&
+      typeof student.name === "string" &&
+      student.name.toLowerCase().includes(search.toLowerCase())
   );
 
   if (loading) {
