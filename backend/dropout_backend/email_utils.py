@@ -5,7 +5,7 @@ def send_email(to_email, subject, message):
         send_mail(
             subject,
             message,
-            None,  # From email; None means use DEFAULT_FROM_EMAIL
+            'udaanbitcrew@gmail.com',  # From email; None means use DEFAULT_FROM_EMAIL
             [to_email],
             fail_silently=False,
         )
