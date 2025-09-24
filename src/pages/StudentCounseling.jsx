@@ -90,8 +90,8 @@ export default function StudentCounseling() {
           } else {
             setError(
               err.response.data?.message ||
-                err.message ||
-                "Failed to fetch data from server"
+              err.message ||
+              "Failed to fetch data from server"
             );
           }
         } else {
@@ -113,6 +113,23 @@ export default function StudentCounseling() {
 
     return name.includes(searchTerm) || enrolment_no.includes(searchTerm);
   });
+  const cycleStatus = (index) => {
+    setStudents((prev) => {
+      const updated = [...prev];
+      const currentStatus = updated[index].status || "Pending";
+
+      const newStatus =
+        currentStatus === "Pending"
+          ? "Done"
+          : currentStatus === "Done"
+            ? "Overdue"
+            : "Pending";
+
+      updated[index] = { ...updated[index], status: newStatus };
+      return updated;
+    });
+  };
+
 
   // Status update handler
   const updateStatus = async (index, newStatus) => {
@@ -260,9 +277,9 @@ export default function StudentCounseling() {
             Counseling Completed:{" "}
             {students.length > 0
               ? Math.round(
-                  (students.filter((s) => s.status === "Done").length / students.length) *
-                    100
-                )
+                (students.filter((s) => s.status === "Done").length / students.length) *
+                100
+              )
               : 0}
             %
           </p>
@@ -270,12 +287,11 @@ export default function StudentCounseling() {
             <div
               className="progress-fill"
               style={{
-                width: `${
-                  students.length > 0
-                    ? (students.filter((s) => s.status === "Done").length / students.length) *
-                      100
-                    : 0
-                }%`,
+                width: `${students.length > 0
+                  ? (students.filter((s) => s.status === "Done").length / students.length) *
+                  100
+                  : 0
+                  }%`,
               }}
             ></div>
           </div>
@@ -314,19 +330,12 @@ export default function StudentCounseling() {
                       <td>{s.enrolment_no || "-"}</td>
                       <td>{formatDate(s.counseling_date)}</td>
                       <td>
-                        <div className="status-buttons">
-                          {["Done", "Pending", "Overdue"].map((statusOption) => (
-                            <button
-                              key={statusOption}
-                              onClick={() => updateStatus(index, statusOption)}
-                              className={`status-btn ${
-                                s.status === statusOption ? "active" : ""
-                              }`}
-                            >
-                              {statusOption}
-                            </button>
-                          ))}
-                        </div>
+                        <button
+                          className={`status-btn single-btn status-${(s.status || "Pending").toLowerCase()}`}
+                          onClick={() => cycleStatus(index)}
+                        >
+                          {s.status || "Pending"}
+                        </button>
                       </td>
                       <td>
                         <button

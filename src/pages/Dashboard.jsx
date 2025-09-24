@@ -76,11 +76,11 @@ function ProfileSection() {
     try {
       console.log("Uploading file:", selectedFile);
       const response = await axios.post(`${apiUrl}/api/upload/`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        // Do NOT set Content-Type manually, let Axios handle it.
-      },
-    });
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // Do NOT set Content-Type manually, let Axios handle it.
+        },
+      });
 
       if (response.status === 201) {
         alert("Upload successful!");
@@ -143,8 +143,8 @@ function ProfileSection() {
 
           <button className="select-file-btn" onClick={handleSelectFileClick}>Select File</button>
           <button className="upload-btn" onClick={handleUploadClick}>Upload</button>
-          <p style={{marginTop: "0.1rem ", fontSize: "0.85rem"}}>
-            To download the uploading data format,{""}
+          <p style={{ marginTop: "0.1rem ", fontSize: "0.85rem" }}>
+            To download the uploading data format {""}
             <a href="/student-data.xlsx" target="_blank" rel="noopener noreferrer">click here</a>
           </p>
         </div>
@@ -160,7 +160,7 @@ function RiskAnalysis() {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     axios
-      .get(`${apiUrl}/api/risk-analytics/`,{
+      .get(`${apiUrl}/api/risk-analytics/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -209,7 +209,7 @@ function StudentTable() {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     axios
-      .get(`${apiUrl}/api/students/`,{
+      .get(`${apiUrl}/api/students/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -246,45 +246,46 @@ function StudentTable() {
           />
         </div>
       </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>STUDENT NAME</th>
-            <th>RISK</th>
-            <th>DAYS IN</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedFilteredStudents.length > 0 ? (
-            sortedFilteredStudents.map((s) => {
-              const riskLevel = s.risk_level || s.prediction?.risk_level || "Unknown";
-              const badgeClass = `badge-${riskLevel.toLowerCase().replace(" ", "-")}`;
-
-              return (
-                <tr key={s.st_id}>
-                  <td className="student-name-cell">
-                    <strong>{s.name}</strong>
-                    <p>Attendance: {s.attendance}%</p>
-                  </td>
-                  <td>
-                    <span className={`badge ${badgeClass}`}>
-                      {riskLevel}
-                    </span>
-                  </td>
-                  <td>{Math.floor(Math.random() * 30) + 1} days</td>
-                </tr>
-              );
-            })
-          ) : (
+      <div className="table-scroll-container">
+        <table>
+          <thead>
             <tr>
-              <td colSpan="3" className="no-data">
-                ❌ No student found
-              </td>
+              <th>STUDENT NAME</th>
+              <th>RISK</th>
+              <th>DAYS IN</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedFilteredStudents.length > 0 ? (
+              sortedFilteredStudents.map((s) => {
+                const riskLevel = s.risk_level || s.prediction?.risk_level || "Unknown";
+                const badgeClass = `badge-${riskLevel.toLowerCase().replace(" ", "-")}`;
+
+                return (
+                  <tr key={s.st_id}>
+                    <td className="student-name-cell">
+                      <strong>{s.name}</strong>
+                      <p>Attendance: {s.attendance}%</p>
+                    </td>
+                    <td>
+                      <span className={`badge ${badgeClass}`}>
+                        {riskLevel}
+                      </span>
+                    </td>
+                    <td>{Math.floor(Math.random() * 30) + 1} days</td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="3" className="no-data">
+                  ❌ No student found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -302,10 +303,10 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '50vh',
         fontSize: '18px'
       }}>

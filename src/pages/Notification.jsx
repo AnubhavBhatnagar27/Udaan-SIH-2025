@@ -174,7 +174,7 @@ export default function Notification() {
                     style={{
                       color:
                         student.status?.toLowerCase() === "completed" ||
-                        student.status?.toLowerCase() === "email sent"
+                          student.status?.toLowerCase() === "email sent"
                           ? "green"
                           : "orange",
                       fontWeight: "bold",
@@ -187,7 +187,15 @@ export default function Notification() {
                     <button
                       onClick={() => openModal(student, index)}
                       disabled={sendingIndex === index}
-                      style={{ padding: "5px 10px", cursor: sendingIndex === index ? "not-allowed" : "pointer" }}
+                      style={{
+                        backgroundColor: 'red',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        padding: '5px 10px',
+                        cursor: sendingIndex === index ? 'not-allowed' : 'pointer',
+                        opacity: sendingIndex === index ? 0.6 : 1
+                      }}
                     >
                       {sendingIndex === index ? "Sending Email..." : "Send Alert"}
                     </button>
