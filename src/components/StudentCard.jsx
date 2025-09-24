@@ -11,9 +11,9 @@ export default function StudentCard({ student }) {
   // Risk color mapping + icon
   const riskLevel = student?.prediction?.risk_level || "Unknown";
   const riskData = {
-    "High Risk": { color: "#e74c3c", icon: "⚠️" },
-    "Medium Risk": { color: "#e67e22", icon: "🟠" },
-    "Low Risk": { color: "#27ae60", icon: "✅" },
+    "High Risk": { color: "#ef4444", icon: "⚠️" },
+    "Medium Risk": { color: "#3b82f6", icon: "🟠" },
+    "Low Risk": { color: "#f59e0b", icon: "✅" },
     "Unknown": { color: "#999", icon: "❔" },
   };
 
