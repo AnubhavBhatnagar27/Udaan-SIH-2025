@@ -141,9 +141,9 @@ function ProfileSection() {
 
           {selectedFile && <p>Selected file: {selectedFile.name}</p>}
 
-          <button className="seelct-file-btn" onClick={handleSelectFileClick}>Select File</button>
+          <button className="select-file-btn" onClick={handleSelectFileClick}>Select File</button>
           <button className="upload-btn" onClick={handleUploadClick}>Upload</button>
-          <p style={{marginTop: "10px"}}>
+          <p style={{marginTop: "0.1rem ", fontSize: "0.85rem"}}>
             To download the uploading data format,{""}
             <a href="/student-data.xlsx" target="_blank" rel="noopener noreferrer">click here</a>
           </p>
