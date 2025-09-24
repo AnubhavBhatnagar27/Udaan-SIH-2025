@@ -1,14 +1,15 @@
 import React from "react";
 import "../styles/StudentCard.css";
-const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function StudentCard({ student }) {
-  if (!student) {
-    return <div className="student-card empty">No student data provided</div>;
+  console.log("Rendering StudentCard with:", student);
+
+  if (!student || !student.name) {
+    return <div className="student-card empty">Invalid student data</div>;
   }
 
   // Risk color mapping + icon
-  const riskLevel = student.prediction?.risk_level || "Unknown";
+  const riskLevel = student?.prediction?.risk_level || "Unknown";
   const riskData = {
     "High Risk": { color: "#e74c3c", icon: "⚠️" },
     "Medium Risk": { color: "#e67e22", icon: "🟠" },
@@ -16,12 +17,11 @@ export default function StudentCard({ student }) {
     "Unknown": { color: "#999", icon: "❔" },
   };
 
-  // Safe fallback if student.risk is missing
   const risk = riskData[riskLevel] || { color: "#999", icon: "❔" };
 
   // Safely access guardian info
-  const guardianName = student.guardian?.name || "N/A";
-  const guardianMobile = student.guardian?.mobile || "N/A";
+  const guardianName = student?.guardian?.name || "N/A";
+  const guardianMobile = student?.guardian?.mobile || "N/A";
 
   return (
     <div className="student-card">
@@ -29,15 +29,26 @@ export default function StudentCard({ student }) {
       <div className="student-top">
         {/* Avatar */}
         <div className="student-avatar" style={{ borderColor: risk.color }}>
-          <img src={student.img || "https://via.placeholder.com/90"} alt={student.name || "Student"} />
+          <img
+            src={student?.img || "https://via.placeholder.com/90"}
+            alt={student?.name || "Student"}
+          />
         </div>
 
         {/* Info */}
         <div className="student-info">
-          <p><strong>Name:</strong> {student.name || "N/A"}</p>
-          <p><strong>Branch:</strong> {student.branch || "N/A"}</p>
-          <p><strong>Batch:</strong> {student.batch || "N/A"}</p>
-          <p><strong>Enrollment No.:</strong> {student.enrolment_no || "N/A"}</p>
+          <p>
+            <strong>Name:</strong> {student.name || "N/A"}
+          </p>
+          <p>
+            <strong>Branch:</strong> {student.branch || "N/A"}
+          </p>
+          <p>
+            <strong>Batch:</strong> {student.batch || "N/A"}
+          </p>
+          <p>
+            <strong>Enrollment No.:</strong> {student.enrolment_no || "N/A"}
+          </p>
 
           {/* Risk Badge */}
           <p>
@@ -52,8 +63,12 @@ export default function StudentCard({ student }) {
       {/* Guardian Info */}
       <div className="guardian-section">
         <h4>👨‍👩‍👧 Guardian Details</h4>
-        <p><strong>Name:</strong> {student.guardian_name}</p>
-        <p><strong>Email ID:</strong> {student.guardian_contact}</p>
+        <p>
+          <strong>Name:</strong> {guardianName}
+        </p>
+        <p>
+          <strong>Mobile:</strong> {guardianMobile}
+        </p>
       </div>
     </div>
   );
