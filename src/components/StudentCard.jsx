@@ -1,38 +1,74 @@
 import React from "react";
-import "../styles/StudentCard.css"; // css specific to student card
+import "../styles/StudentCard.css";
 
 export default function StudentCard({ student }) {
+  console.log("Rendering StudentCard with:", student);
+
+  if (!student || !student.name) {
+    return <div className="student-card empty">Invalid student data</div>;
+  }
+
+  // Risk color mapping + icon
+  const riskLevel = student?.prediction?.risk_level || "Unknown";
+  const riskData = {
+    "High Risk": { color: "#e74c3c", icon: "⚠️" },
+    "Medium Risk": { color: "#e67e22", icon: "🟠" },
+    "Low Risk": { color: "#27ae60", icon: "✅" },
+    "Unknown": { color: "#999", icon: "❔" },
+  };
+
+  const risk = riskData[riskLevel] || { color: "#999", icon: "❔" };
+
+  // Safely access guardian info
+  const guardianName = student?.guardian?.name || "N/A";
+  const guardianMobile = student?.guardian?.mobile || "N/A";
+
   return (
     <div className="student-card">
-      <div className="student-header">
-        <img src={student.img} alt={student.name} className="student-avatar" />
-        <div>
-          <p><strong>Name:</strong> {student.name}</p>
-          <p><strong>Branch:</strong> {student.branch}</p>
-          <p><strong>Batch:</strong> {student.batch}</p>
-          <p><strong>Enrollment No.:</strong> {student.enrolment_no}</p>
+      {/* Top Section: Avatar + Student Info */}
+      <div className="student-top">
+        {/* Avatar */}
+        <div className="student-avatar" style={{ borderColor: risk.color }}>
+          <img
+            src={student?.img || "https://via.placeholder.com/90"}
+            alt={student?.name || "Student"}
+          />
+        </div>
+
+        {/* Info */}
+        <div className="student-info">
+          <p>
+            <strong>Name:</strong> {student.name || "N/A"}
+          </p>
+          <p>
+            <strong>Branch:</strong> {student.branch || "N/A"}
+          </p>
+          <p>
+            <strong>Batch:</strong> {student.batch || "N/A"}
+          </p>
+          <p>
+            <strong>Enrollment No.:</strong> {student.enrolment_no || "N/A"}
+          </p>
+
+          {/* Risk Badge */}
           <p>
             <strong>Risk:</strong>{" "}
-            <span
-              className={`risk-badge ${
-                student.risk_level === "High Risk"
-                  ? "risk-high"
-                  : student.risk_level === "Medium Risk"
-                  ? "risk-medium"
-                  : "risk-low"
-              }`}
-            >
-              {student.risk_level}
+            <span className="risk-badge" style={{ backgroundColor: risk.color }}>
+              {risk.icon} <span className="risk-text">{riskLevel || "N/A"}</span>
             </span>
-            {/* <span className="risk-badge">{student.risk}</span> */}
           </p>
         </div>
       </div>
 
-      <div className="guardian">
-        <p><strong>Guardian Detail:</strong></p>
-        <p>Name: {student.guardian.name}</p>
-        <p>Mobile No: {student.guardian.mobile}</p>
+      {/* Guardian Info */}
+      <div className="guardian-section">
+        <h4>👨‍👩‍👧 Guardian Details</h4>
+        <p>
+          <strong>Name:</strong> {student.guardian_name}
+        </p>
+        <p>
+          <strong>Mobile:</strong> {student.guardian_contact}
+        </p>
       </div>
     </div>
   );
