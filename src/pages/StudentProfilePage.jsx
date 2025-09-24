@@ -1,306 +1,141 @@
-// src/pages/StudentCounseling.jsx
 import React, { useState, useEffect } from "react";
-import "../styles/StudentCounseling.css";
-import axios from "axios"; // Import axios for API requests
+import { useParams, useLocation } from "react-router-dom";
+import axios from "axios";
+import "../styles/StudentProfilePage.css";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-export default function StudentCounseling() {
-  const [search, setSearch] = useState("");
-  const [students, setStudents] = useState([]); // Empty array initially
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [newRemark, setNewRemark] = useState("");
-  const [currentMentor, setCurrentMentor] = useState({ name: "Unknown" });
+export default function StudentProfilePage() {
+  const { st_id } = useParams();
+  const location = useLocation();
+  const [student, setStudent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setError("No access token found. Please login.");
+        setLoading(false);
+        return;
+      }
 
-  // Format date function to show current date in readable format
-  const formatDate = (date) => {
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+      try {
+        // First try to get student from location state (passed from navigation)
+        if (location.state) {
+          setStudent(location.state);
+          setLoading(false);
+          return;
+        }
 
-useEffect(() => {
-  const fetchData = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setError("No access token found. Please login.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const [studentsRes, mentorRes] = await Promise.all([
-        fetch(`${apiUrl}/api/students/`, {
+        // If no state, fetch from API
+        const response = await axios.get(`${apiUrl}/api/students/${st_id}/`, {
           headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${apiUrl}/api/mentors/`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
+        });
 
-      if (!studentsRes.ok) throw new Error("Failed to fetch students");
-      if (!mentorRes.ok) throw new Error("Failed to fetch mentor data");
-
-      const studentsData = await studentsRes.json();
-      const mentorData = await mentorRes.json();
-
-      setStudents(studentsData);
-      setCurrentMentor(mentorData); // Assuming { name, id, institute, etc. }
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchData();
-}, []);
-
-// Empty dependency array ensures this only runs once when the component mounts
-
-  const filtered = students.filter((s) => {
-    const name = s.name ? s.name.toLowerCase() : "";
-    const enrolment_no = s.enrolment_no ? s.enrolment_no.toLowerCase() : "";
-    const searchTerm = search.toLowerCase();
-
-    return name.includes(searchTerm) || enrolment_no.includes(searchTerm);
-  });
-
-  // New function to update status on button click
-  const updateStatus = (index, newStatus) => {
-    setStudents((prev) =>
-      prev.map((s, i) => (i === index ? { ...s, status: newStatus } : s))
-    );
-  };
-
-  const openRemarkModal = async (student) => {
-  setSelectedStudent(null); // clear old selection to avoid stale UI
-  setNewRemark("");
-
-  const token = localStorage.getItem("accessToken");
-  try {
-    const res = await axios.get(
-      `${apiUrl}/api/students/${student.st_id}/remarks/`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
+        setStudent(response.data);
+      } catch (err) {
+        setError("Failed to load student data");
+        console.error("Error fetching student:", err);
+      } finally {
+        setLoading(false);
       }
-    );
+    };
 
-    // Add fetched remarks to student and set selectedStudent
-    setSelectedStudent({ ...student, remarks: res.data });
-  } catch (err) {
-    console.error("Failed to fetch remarks:", err);
-    setError("Failed to load remarks");
-    // Still open modal but with empty remarks
-    setSelectedStudent({ ...student, remarks: [] });
-  }
-};
+    fetchStudentData();
+  }, [st_id, location.state]);
 
-
-  const addRemark = async () => {
-  if (!newRemark.trim()) return;
-
-  const token = localStorage.getItem("accessToken");
-
-  const remarkPayload = {
-    text: newRemark,
-    counselor: currentMentor.name || "Unknown", // Or whatever your logged-in mentor is
-  };
-
-  try {
-    // 1. Post the new remark to the backend
-    await axios.post(
-      `${apiUrl}/api/students/${selectedStudent.st_id}/remarks/`,
-      remarkPayload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    // 2. Fetch updated remarks from backend
-    const remarksRes = await axios.get(
-      `${apiUrl}/api/students/${selectedStudent.st_id}/remarks/`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    // 3. Update student with fresh remarks
-    setSelectedStudent((prev) => ({
-      ...prev,
-      remarks: remarksRes.data,
-    }));
-
-    setNewRemark("");
-  } catch (error) {
-    console.error("Error adding remark:", error.response?.data || error.message);
-    setError("Failed to add remark");
-  }
-};
-
-
-  if (loading) return <div>Loading...</div>; // Show loading message while fetching data
-  if (error) return <div>{error}</div>; // Show error if data fetching fails
+  if (loading) return <div className="loading">Loading student profile...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
+  if (!student) return <div className="error">Student not found</div>;
 
   return (
-    <div className="counseling-page">
-      <div className="counseling-main">
-        <h2 className="page-title">📚 Student Counseling Dashboard</h2>
-
-        {/* Stats */}
-        <div className="stats-bar">
-          <div className="stat-box">
-            <h3>Total Students</h3>
-            <p>{students.length}</p>
-          </div>
-          <div className="stat-box">
-            <h3>✅ Completed</h3>
-            <p>{students.filter((s) => s.status === "Done").length}</p>
-          </div>
-          <div className="stat-box">
-            <h3>⏳ Pending</h3>
-            <p>{students.filter((s) => s.status === "Pending").length}</p>
-          </div>
-          <div className="stat-box">
-            <h3>⚠️ Overdue</h3>
-            <p>{students.filter((s) => s.status === "Overdue").length}</p>
-          </div>
-        </div>
-
-        {/* Progress */}
-        <div className="progress-section">
-          <p>
-            Counseling Completed:{" "}
-            {students.length > 0
-              ? Math.round(
-                  (students.filter((s) => s.status === "Done").length / students.length) * 100
-                )
-              : 0}
-            %
-          </p>
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{
-                width: `${
-                  students.length > 0
-                    ? (students.filter((s) => s.status === "Done").length / students.length) * 100
-                    : 0
-                }%`,
+    <div className="student-profile-page">
+      <div className="profile-container">
+        <div className="profile-header">
+          <div className="profile-image">
+            <img 
+              src={student.img || "/assets/student.png"} 
+              alt={student.name}
+              onError={(e) => {
+                e.target.src = "/assets/student.png";
               }}
-            ></div>
+            />
+          </div>
+          <div className="profile-info">
+            <h1>{student.name}</h1>
+            <p className="enrollment">Enrollment: {student.enrolment_no}</p>
+            <p className="risk-level">
+              Risk Level: <span className={`risk-badge ${student.risk_level?.toLowerCase().replace(' ', '-')}`}>
+                {student.risk_level || 'Unknown'}
+              </span>
+            </p>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="table-container">
-          <div className="table-header">
-            <h3>📑 Counseling Records</h3>
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder=" Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="table-scroll">
-            <table className="student-table">
-              <thead>
-                <tr>
-                  <th>Student Name</th>
-                  <th>Enrollment No.</th>
-                  <th>Counseling Date</th>
-                  <th>Status</th>
-                  <th>Remark</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.length > 0 ? (
-                  filtered.map((s, index) => (
-                    <tr key={index}>
-                      <td>{s.name || "-"}</td>
-                      <td>{s.enrolment_no || "-"}</td>
-                      <td>{formatDate(new Date())}</td> {/* Show current date here */}
-                      <td>
-                        <div className="status-buttons">
-                          {["Done", "Pending", "Overdue"].map((statusOption) => (
-                            <button
-                              key={statusOption}
-                              onClick={() => updateStatus(index, statusOption)}
-                              className={`status-btn ${
-                                s.status === statusOption ? "active" : ""
-                              }`}
-                            >
-                              {statusOption}
-                            </button>
-                          ))}
-                        </div>
-                      </td>
-                      <td>
-                        <button className="remark-btn" onClick={() => openRemarkModal(s)}>
-                          View/Add Remark
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="no-data">
-                      ❌ No records found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Remark Modal */}
-        {selectedStudent && (
-          <div className="modal-overlay" onClick={() => setSelectedStudent(null)}>
-            <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-              <h3>Remarks - {selectedStudent.name || "-"}</h3>
-              <ul className="remark-history">
-                {selectedStudent.remarks && selectedStudent.remarks.length > 0 ? (
-                  selectedStudent.remarks.map((r, i) => (
-                    <li key={i}>
-                      <strong>{r.counselor || "Unknown"}</strong> ({r.date || "Unknown"}):{" "}
-                      {r.text || ""}
-                    </li>
-                  ))
-                ) : (
-                  <p className="no-remarks">No previous remarks</p>
-                )}
-              </ul>
-
-              <div className="remark-input-box">
-                <input
-                  type="text"
-                  value={newRemark}
-                  placeholder="Add new remark..."
-                  onChange={(e) => setNewRemark(e.target.value)}
-                />
-                <button onClick={addRemark}>➕ Add</button>
+        <div className="profile-details">
+          <div className="detail-section">
+            <h3>Academic Information</h3>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <label>Attendance:</label>
+                <span>{student.attendance}%</span>
               </div>
-
-              <button className="close-btn" onClick={() => setSelectedStudent(null)}>
-                Close
-              </button>
+              <div className="detail-item">
+                <label>Status:</label>
+                <span className={`status ${student.status?.toLowerCase()}`}>
+                  {student.status || 'Unknown'}
+                </span>
+              </div>
+              <div className="detail-item">
+                <label>Counseling Date:</label>
+                <span>{student.counseling_date ? new Date(student.counseling_date).toLocaleDateString() : 'Not set'}</span>
+              </div>
             </div>
           </div>
-        )}
+
+          <div className="detail-section">
+            <h3>Performance Metrics</h3>
+            <div className="metrics-grid">
+              <div className="metric-card">
+                <h4>Attendance</h4>
+                <div className="metric-value">{student.attendance}%</div>
+                <div className="metric-bar">
+                  <div 
+                    className="metric-fill" 
+                    style={{ width: `${student.attendance || 0}%` }}
+                  ></div>
+                </div>
+              </div>
+              <div className="metric-card">
+                <h4>Risk Assessment</h4>
+                <div className={`risk-indicator ${student.risk_level?.toLowerCase().replace(' ', '-')}`}>
+                  {student.risk_level || 'Unknown'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {student.remarks && student.remarks.length > 0 && (
+            <div className="detail-section">
+              <h3>Counseling Remarks</h3>
+              <div className="remarks-list">
+                {student.remarks.map((remark, index) => (
+                  <div key={index} className="remark-item">
+                    <div className="remark-header">
+                      <strong>{remark.counselor || 'Unknown Counselor'}</strong>
+                      <span className="remark-date">
+                        {remark.date ? new Date(remark.date).toLocaleDateString() : 'Unknown Date'}
+                      </span>
+                    </div>
+                    <p className="remark-text">{remark.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

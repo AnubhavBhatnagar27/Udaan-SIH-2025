@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import StudentCard from "../pages/StudentCard";
+import StudentCard from "../components/StudentCard";
 import "../styles/StudentDataPage.css";
 
 const apiUrl = process.env.REACT_APP_API_URL;

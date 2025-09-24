@@ -193,7 +193,12 @@ class StudentRecordView(APIView):
         except Profile.DoesNotExist:
             return Response({"error": "No mentor found for this user"}, status=404)
 
-        students = StudentRecord.objects.filter(mentor=profile)
+        students = StudentRecord.objects.filter(mentor=profile).select_related('mentor').only(
+            'st_id', 'name', 'attendance', 'avg_test_score', 'attempts', 'fees_paid', 
+            'backlogs', 'prediction', 'risk_level', 'predicted_label', 'prediction_percentage',
+            'guardian_name', 'guardian_contact', 'branch', 'batch', 'enrolment_no', 
+            'current_cgpa', 'img', 'date', 'status'
+        )
         result = []
         for student in students:
             result.append({
@@ -302,11 +307,11 @@ class UploadCSVView(APIView):
         inserted = 0
         skipped = 0
 
+        # Clear existing students for this mentor before uploading new data
+        StudentRecord.objects.filter(mentor=profile).delete()
+        
         # Process each row in the file
         for _, row in df.iterrows():
-            if StudentRecord.objects.filter(st_id=row['st_id']).exists():
-                skipped += 1
-                continue
 
             # Extract data from row and prepare for prediction
             attempts = int(row.get("attempts", 0))
@@ -352,7 +357,7 @@ class UploadCSVView(APIView):
             inserted += 1
 
         return Response({
-            "message": "CSV uploaded successfully.",
+            "message": "Data uploaded successfully. Previous data cleared and replaced with new data.",
             "inserted": inserted,
             "skipped (duplicates)": skipped,
         }, status=status.HTTP_201_CREATED)

@@ -288,6 +288,28 @@ function StudentTable() {
 
 // Main Dashboard Component
 export default function Dashboard() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time for better UX
+    const timer = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '50vh',
+        fontSize: '18px'
+      }}>
+        Loading Dashboard...
+      </div>
+    );
+  }
+
   return (
     <>
       <ProfileSection />

@@ -10,8 +10,8 @@ class Profile(models.Model):
     academic_session = models.CharField(max_length=50)
 
 class StudentRecord(models.Model):
-    mentor=models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='students', null=True, blank=True)
-    st_id = models.IntegerField(null=True, default=0)
+    mentor=models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='students', null=True, blank=True, db_index=True)
+    st_id = models.IntegerField(null=True, default=0, db_index=True)
     name = models.CharField(max_length=100)
     branch = models.CharField(max_length=100)
     batch = models.CharField(max_length=50,default="",blank=True)

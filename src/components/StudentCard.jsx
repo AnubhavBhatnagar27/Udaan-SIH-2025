@@ -10,20 +10,20 @@ export default function StudentCard({ student }) {
           <p><strong>Name:</strong> {student.name}</p>
           <p><strong>Branch:</strong> {student.branch}</p>
           <p><strong>Batch:</strong> {student.batch}</p>
-          <p><strong>Enrollment No.:</strong> {student.enrollment}</p>
+          <p><strong>Enrollment No.:</strong> {student.enrolment_no}</p>
           <p>
             <strong>Risk:</strong>{" "}
             <span
               className={`risk-badge ${
-                student.risk === "High Risk"
+                student.risk_level === "High Risk"
                   ? "risk-high"
-                  : student.risk === "Medium Risk"
+                  : student.risk_level === "Medium Risk"
                   ? "risk-medium"
                   : "risk-low"
               }`}
             >
-              {student.risk}
-            </span>
+              {student.risk_level}
+            </span>
             {/* <span className="risk-badge">{student.risk}</span> */}
           </p>
         </div>
