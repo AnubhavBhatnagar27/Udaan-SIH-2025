@@ -485,7 +485,7 @@ class StudentRemarksView(APIView):
     # Optional: permission_classes = [IsAuthenticated]
 
     def get(self, request, st_id):
-        student = get_object_or_404(StudentRecord, st_id=st_id)
+        student = get_object_or_404(StudentRecord, st_id=st_id, mentor=request.user.profile)
         remarks = student.remarks.all().order_by('-created_at')
         data = []
         for r in remarks:
@@ -498,7 +498,7 @@ class StudentRemarksView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
     def post(self, request, st_id):
-        student = get_object_or_404(StudentRecord, st_id=st_id)
+        student = get_object_or_404(StudentRecord, mentor=request.user.profile,st_id=st_id)
         text = request.data.get("text")
         counselor = request.data.get("counselor")
 
