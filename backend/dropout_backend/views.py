@@ -567,56 +567,64 @@ class RiskAnalyticsView(APIView):
 
 from .email_utils import send_email  # import your email helper    
 from django.utils import timezone
+import logging
+
+logger = logging.getLogger(__name__)
 
 class SendEmailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        email = request.data.get("email")
-        subject = request.data.get("subject")
-        message = request.data.get("message")
-        student_id = request.data.get("student_id")
-
-        if not email or not subject or not message or not student_id:
-            return Response(
-                {"error": "Email, subject, message and student_id are required."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        success = send_email(email, subject, message)
-
         try:
-            student = StudentRecord.objects.filter(st_id=student_id)
-            student = student.first()  # Get the first matching student
-        except StudentRecord.DoesNotExist:
-            return Response(
-                {"error": "Student not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        
-        if success:
-            # Create notification log
-            EmailNotification.objects.create(
-                student=student,
-                recipient_email=email,
-                subject=subject,
-                message=message,
-                status="Sent",
-            )
+            email = request.data.get("email")
+            subject = request.data.get("subject")
+            message = request.data.get("message")
+            student_id = request.data.get("student_id")
 
-            # Update student status and date
-            student.status = "Email Sent"
-            student.date = timezone.now()
-            student.save()
+            if not email or not subject or not message or not student_id:
+                return Response(
+                    {"error": "Email, subject, message and student_id are required."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-            return Response({"status": "Email sent successfully."}, status=status.HTTP_200_OK)
-        else:
-            # Log failure notification
-            EmailNotification.objects.create(
-                student=student,
-                recipient_email=email,
-                subject=subject,
-                message=message,
-                status="Failed",
-            )
-            return Response({"error": "Failed to send email."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            try:
+                student = StudentRecord.objects.get(st_id=student_id)
+            except StudentRecord.DoesNotExist:
+                return Response(
+                    {"error": "Student not found."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            success = False
+            try:
+                success = send_email(email, subject, message)
+            except Exception as e:
+                logger.error(f"Error sending email: {e}", exc_info=True)
+                success = False
+
+            if success:
+                EmailNotification.objects.create(
+                    student=student,
+                    recipient_email=email,
+                    subject=subject,
+                    message=message,
+                    status="Sent",
+                )
+                student.status = "Email Sent"
+                student.date = timezone.now()
+                student.save()
+
+                return Response({"status": "Email sent successfully."}, status=status.HTTP_200_OK)
+            else:
+                EmailNotification.objects.create(
+                    student=student,
+                    recipient_email=email,
+                    subject=subject,
+                    message=message,
+                    status="Failed",
+                )
+                return Response({"error": "Failed to send email."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        except Exception as e:
+            logger.error(f"Unexpected error in SendEmailView: {e}", exc_info=True)
+            return Response({"error": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
