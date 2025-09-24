@@ -4,6 +4,7 @@ import StudentCard from "../components/StudentCard";
 import "../styles/StudentDataPage.css";
 
 const apiUrl = process.env.REACT_APP_API_URL;
+
 export default function StudentDataPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -13,49 +14,44 @@ export default function StudentDataPage() {
   const [institute, setInstitute] = useState("Institute Name");
 
   // Fetch students from backend on component mount
-    useEffect(() => {
-      const fetchData = async () => {
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-          setError("No access token found. Please login.");
-          setLoading(false);
-          return;
-        }
-        try {
-          const [studentsRes, mentorRes] = await Promise.all([
-            fetch(`${apiUrl}/api/students/`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            fetch(`${apiUrl}/api/mentors/`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-          ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setError("No access token found. Please login.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const [studentsRes, mentorRes] = await Promise.all([
+          fetch(`${apiUrl}/api/students/`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch(`${apiUrl}/api/mentors/`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-          if (!studentsRes.ok) throw new Error("Failed to fetch students");
-          if (!mentorRes.ok) throw new Error("Failed to fetch mentor data");
+        if (!studentsRes.ok) throw new Error("Failed to fetch students");
+        if (!mentorRes.ok) throw new Error("Failed to fetch mentor data");
 
-          const studentsData = await studentsRes.json();
-          const cleanStudents = studentsData.filter(
-            (s) => s && typeof s === "object" && typeof s.name === "string"
-          );
-          setStudents(cleanStudents);
-          
-          const mentorData = await mentorRes.json();
+        const studentsData = await studentsRes.json();
+        const cleanStudents = studentsData.filter(
+          (s) => s && typeof s === "object" && typeof s.name === "string"
+        );
+        setStudents(cleanStudents); // ✅ Set only clean data
 
-          setStudents(studentsData);
-          setInstitute(mentorData.institute || "Institute Name Not Available");
-        } catch (error) {
-          setError(error.message);
-        } finally {
-          setLoading(false);
-        }
-      };
+        const mentorData = await mentorRes.json();
+        setInstitute(mentorData.institute || "Institute Name Not Available");
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      fetchData();
-    }, []);
-
-
-
+    fetchData();
+  }, []);
 
   // Filter students by name based on search input
   const filteredStudents = students.filter(
@@ -81,9 +77,6 @@ export default function StudentDataPage() {
         <div>
           <h2 className="student-title">Student Data</h2>
           <h4>{institute}</h4>
-          {/* <p className="college-name">
-            Oriental Institute of Science & Technology
-          </p> */}
         </div>
 
         {/* Search Box */}
@@ -104,7 +97,7 @@ export default function StudentDataPage() {
         {filteredStudents.length > 0 ? (
           filteredStudents.map((student) => (
             <div
-              key={student.st_id} // Use st_id as unique key
+              key={student.st_id || student.id || student.name}
               className="student-card-wrapper"
               onClick={() => {
                 console.log("Clicked student id:", student.st_id);
@@ -114,7 +107,6 @@ export default function StudentDataPage() {
               <StudentCard
                 student={{
                   ...student,
-                  // fallback image if not provided
                   img: student.img || "../assets/student.png",
                 }}
               />
