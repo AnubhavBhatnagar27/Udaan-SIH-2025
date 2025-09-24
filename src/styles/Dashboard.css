@@ -83,7 +83,20 @@
 .upload-box:hover {
   background: #f3f4f6;
 }
+.select-file-btn {
+  background-color: white;
+  color: #007bff; /* Blue text */
+  border: 2px solid #007bff;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s, color 0.3s;
+}
 
+.select-file-btn:hover {
+  background-color: #e6f0ff; /* Light blue hover */
+}
 .upload-btn {
   background: #2563eb;
   color: #fff;

@@ -121,12 +121,12 @@ function ProfileSection() {
 
       <div className="profile-right">
         <div className="upload-box">
-          <img
+          {/* <img
             src={uploadIcon}
             alt="Upload Icon"
             className="upload-icon"
             onClick={() => window.open("/student-data.xlsx", "_blank")}
-          />
+          /> */}
           <h3>Upload Student Data</h3>
           <p><strong>Select file or drag & drop</strong></p>
           <small>.csv, .xlsx files accepted (Max: 50 MB)</small>
@@ -141,8 +141,12 @@ function ProfileSection() {
 
           {selectedFile && <p>Selected file: {selectedFile.name}</p>}
 
-          <button className="upload-btn" onClick={handleSelectFileClick}>Select File</button>
+          <button className="seelct-file-btn" onClick={handleSelectFileClick}>Select File</button>
           <button className="upload-btn" onClick={handleUploadClick}>Upload</button>
+          <p style={{marginTop: "10px"}}>
+            To download the uploading data format,{""}
+            <a href="/student-data.xlsx" target="_blank" rel="noopener noreferrer">click here</a>
+          </p>
         </div>
       </div>
     </div>
