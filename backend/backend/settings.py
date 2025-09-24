@@ -184,7 +184,14 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),               # Default is "Bearer"
 }
 
-EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'apikey'  # This is literally the string "apikey"
+EMAIL_HOST_PASSWORD = 'REMOVED-KEY'  # Your actual API key here
+DEFAULT_FROM_EMAIL = 'udaanbitcrew@gmail.com'
+
 
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")  # Make sure this env var is set securely
 

@@ -154,6 +154,7 @@ export default function StudentProfile() {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch student data from backend
   const token = localStorage.getItem("accessToken");
