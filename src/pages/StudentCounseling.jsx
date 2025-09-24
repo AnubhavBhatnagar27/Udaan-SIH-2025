@@ -20,7 +20,7 @@ export default function StudentCounseling() {
     // Expecting "mm/dd/yyyy"
     const parts = dateStr.split("/");
     if (parts.length !== 3) return "-";
-    const [mm, dd, yyyy] = parts;
+    const [dd, mm, yyyy] = parts;
     // Create Date with yyyy, mm-1 (month is zero-based), dd
     const dateObj = new Date(yyyy, mm - 1, dd);
     if (isNaN(dateObj)) return "-";
