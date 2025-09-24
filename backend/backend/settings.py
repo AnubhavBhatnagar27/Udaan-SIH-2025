@@ -189,7 +189,6 @@ EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'apikey'  # This is literally the string "apikey"
-EMAIL_HOST_PASSWORD = 'REMOVED-KEY'  # Your actual API key here
 DEFAULT_FROM_EMAIL = 'udaanbitcrew@gmail.com'
 
 
