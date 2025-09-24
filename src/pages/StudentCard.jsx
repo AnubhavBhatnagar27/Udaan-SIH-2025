@@ -64,10 +64,10 @@ export default function StudentCard({ student }) {
       <div className="guardian-section">
         <h4>👨‍👩‍👧 Guardian Details</h4>
         <p>
-          <strong>Name:</strong> {guardianName}
+          <strong>Name:</strong> {guardian_name}
         </p>
         <p>
-          <strong>Mobile:</strong> {guardianMobile}
+          <strong>Mobile:</strong> {guardian_contact}
         </p>
       </div>
     </div>
