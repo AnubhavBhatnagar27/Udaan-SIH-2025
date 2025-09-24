@@ -333,7 +333,7 @@ export default function StudentCounseling() {
                     <tr key={s.st_id || index}>
                       <td>{s.name || "-"}</td>
                       <td>{s.enrolment_no || "-"}</td>
-                      <td>{formatDate(s.counseling_date)}</td>
+                      <td>{formatDate(s.date)}</td>
                       <td>
                         <button
                           className={`status-btn single-btn status-${(s.status || "Pending").toLowerCase()}`}
