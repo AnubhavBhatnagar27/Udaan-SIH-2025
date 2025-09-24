@@ -35,6 +35,11 @@ export default function StudentDataPage() {
           if (!mentorRes.ok) throw new Error("Failed to fetch mentor data");
 
           const studentsData = await studentsRes.json();
+          const cleanStudents = studentsData.filter(
+            (s) => s && typeof s === "object" && typeof s.name === "string"
+          );
+          setStudents(cleanStudents);
+          
           const mentorData = await mentorRes.json();
 
           setStudents(studentsData);
