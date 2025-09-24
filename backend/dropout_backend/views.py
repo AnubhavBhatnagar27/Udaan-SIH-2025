@@ -312,49 +312,54 @@ class UploadCSVView(APIView):
         
         # Process each row in the file
         for _, row in df.iterrows():
-
-            # Extract data from row and prepare for prediction
-            attempts = int(row.get("attempts", 0))
-            backlogs = int(row.get("backlogs", 0))
-
-            input_data = [
-                float(row["attendance"]),
-                float(row["avg_test_score"]),
-                attempts,
-                float(row["fees_paid"]),
-                backlogs,
-                float(row["Current_CGPA"]),
-            ]
-
             try:
-                # Attempt to predict the student's performance
-                prediction = predict_from_model(input_data)
-            except Exception as e:
-                return Response(
-                    {"error": f"Prediction failed on row with st_id {row['st_id']}: {str(e)}"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                # Extract data from row and prepare for prediction
+                attempts = int(row.get("attempts", 0))
+                backlogs = int(row.get("backlogs", 0))
+
+                input_data = [
+                    float(row["attendance"]),
+                    float(row["avg_test_score"]),
+                    attempts,
+                    float(row["fees_paid"]),
+                    backlogs,
+                    float(row["Current_CGPA"]),
+                ]
+
+                try:
+                    # Attempt to predict the student's performance
+                    prediction = predict_from_model(input_data)
+                except Exception as e:
+                    return Response(
+                        {"error": f"Prediction failed on row with st_id {row['st_id']}: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    )
+
+                # Create a new student record
+                StudentRecord.objects.create(
+                    st_id=row["st_id"],
+                    name=row["name"],
+                    attendance=row["attendance"],
+                    avg_test_score=row["avg_test_score"],
+                    attempts=attempts,
+                    fees_paid=row["fees_paid"],
+                    backlogs=backlogs,
+                    current_cgpa=row["Current_CGPA"],
+                    branch=row["branch"],
+                    batch=row["batch"],
+                    enrolment_no=row["enrolment_no"],
+                    guardian_name=row["guardian_name"],
+                    guardian_contact=row["guardian_contact"],
+                    prediction=prediction,
+                    mentor=profile  # associate student to mentor
                 )
 
-            # Create a new student record
-            StudentRecord.objects.create(
-                st_id=row["st_id"],
-                name=row["name"],
-                attendance=row["attendance"],
-                avg_test_score=row["avg_test_score"],
-                attempts=attempts,
-                fees_paid=row["fees_paid"],
-                backlogs=backlogs,
-                current_cgpa=row["Current_CGPA"],
-                branch=row["branch"],
-                batch=row["batch"],
-                enrolment_no=row["enrolment_no"],
-                guardian_name=row["guardian_name"],
-                guardian_contact=row["guardian_contact"],
-                prediction=prediction,
-                mentor=profile  # associate student to mentor
-            )
-
-            inserted += 1
+                inserted += 1
+            except Exception as e:
+                # Log the error and continue with next row
+                print(f"Failed to create student record for st_id {row.get('st_id', 'unknown')}: {str(e)}")
+                skipped += 1
+                continue
 
         return Response({
             "message": "Data uploaded successfully. Previous data cleared and replaced with new data.",

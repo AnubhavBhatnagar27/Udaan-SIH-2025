@@ -15,7 +15,7 @@ class StudentRecord(models.Model):
     name = models.CharField(max_length=100)
     branch = models.CharField(max_length=100)
     batch = models.CharField(max_length=50,default="",blank=True)
-    enrolment_no = models.CharField(max_length=50, unique=True, default="", blank=True)
+    enrolment_no = models.CharField(max_length=50, default="", blank=True)
     current_cgpa = models.FloatField(null=True, default=0.0)
     guardian_name = models.CharField(max_length=100, default="", null=True, blank=True)
     guardian_contact = models.EmailField(max_length=254, default="",null=True, blank=True)
@@ -35,6 +35,9 @@ class StudentRecord(models.Model):
     prediction = models.JSONField(null=True, blank=True)
     status = models.CharField(max_length=20, default="Unknown")  # e.g., "At Risk", "Safe", etc.
     date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('enrolment_no', 'mentor')
 
     def __str__(self):
         return f"{self.st_id} - {self.name}"
