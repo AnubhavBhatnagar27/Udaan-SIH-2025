@@ -309,16 +309,18 @@ class UploadCSVView(APIView):
             return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Try fetching the mentor linked to the logged-in user
             profile = Profile.objects.get(user=request.user)
-        except profile.DoesNotExist:
+        except Profile.DoesNotExist:
             return Response({"error": "No mentor found for this user"}, status=404)
 
         filename = file_obj.name
-        if filename.endswith('.xlsx') or filename.endswith('.xls'):
-            df = pd.read_excel(file_obj)
-        else:
-            df = pd.read_csv(file_obj)
+        try:
+            if filename.endswith('.xlsx') or filename.endswith('.xls'):
+                df = pd.read_excel(file_obj)
+            else:
+                df = pd.read_csv(file_obj)
+        except Exception as e:
+            return Response({"error": f"Failed to read file: {str(e)}"}, status=400)
 
         required_columns = [
             "st_id", "name", "attendance", "avg_test_score", "attempts", "fees_paid",
@@ -326,75 +328,85 @@ class UploadCSVView(APIView):
             "guardian_name", "guardian_contact"
         ]
 
-        # Check if all required columns are present in the file
         for col in required_columns:
             if col not in df.columns:
-                return Response({"error": f"Missing column: {col}"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": f"Missing column: {col}"}, status=400)
 
-        # Sort DataFrame by student id
         df = df.sort_values(by='st_id')
-        inserted = 0
-        skipped = 0
+        inserted, skipped = 0, 0
 
-        # Clear existing students for this mentor before uploading new data
+        # Clear existing records
         StudentRecord.objects.filter(mentor=profile).delete()
-        
-        # Process each row in the file
-        for _, row in df.iterrows():
+
+        for index, row in df.iterrows():
             try:
-                # Extract data from row and prepare for prediction
-                attempts = int(row.get("attempts", 0))
-                backlogs = int(row.get("backlogs", 0))
+                # Check for missing or blank required values
+                if any(pd.isnull(row.get(field)) or str(row.get(field)).strip() == "" for field in required_columns):
+                    print(f"Skipping row {index}: missing or blank field(s)")
+                    skipped += 1
+                    continue
 
-                input_data = [
-                    float(row["attendance"]),
-                    float(row["avg_test_score"]),
+                # Convert and sanitize values
+                attempts = int(row["attempts"])
+                backlogs = int(row["backlogs"])
+                attendance = float(row["attendance"])
+                avg_test_score = float(row["avg_test_score"])
+                fees_paid = float(row["fees_paid"])
+                current_cgpa = float(row["Current_CGPA"])
+
+                # Optional: strip strings
+                student_data = {
+                    "st_id": str(row["st_id"]).strip(),
+                    "name": str(row["name"]).strip(),
+                    "branch": str(row["branch"]).strip(),
+                    "batch": str(row["batch"]).strip(),
+                    "enrolment_no": str(row["enrolment_no"]).strip(),
+                    "guardian_name": str(row["guardian_name"]).strip(),
+                    "guardian_contact": str(row["guardian_contact"]).strip(),
+                }
+
+                # Predict
+                prediction = predict_from_model([
+                    attendance,
+                    avg_test_score,
                     attempts,
-                    float(row["fees_paid"]),
+                    fees_paid,
                     backlogs,
-                    float(row["Current_CGPA"]),
-                ]
+                    current_cgpa
+                ])
 
-                try:
-                    # Attempt to predict the student's performance
-                    prediction = predict_from_model(input_data)
-                except Exception as e:
-                    return Response(
-                        {"error": f"Prediction failed on row with st_id {row['st_id']}: {str(e)}"},
-                        status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                    )
-
-                # Create a new student record
+                # Create student record
                 StudentRecord.objects.create(
-                    st_id=row["st_id"],
-                    name=row["name"],
-                    attendance=row["attendance"],
-                    avg_test_score=row["avg_test_score"],
+                    st_id=student_data["st_id"],
+                    name=student_data["name"],
+                    attendance=attendance,
+                    avg_test_score=avg_test_score,
                     attempts=attempts,
-                    fees_paid=row["fees_paid"],
+                    fees_paid=fees_paid,
                     backlogs=backlogs,
-                    current_cgpa=row["Current_CGPA"],
-                    branch=row["branch"],
-                    batch=row["batch"],
-                    enrolment_no=row["enrolment_no"],
-                    guardian_name=row["guardian_name"],
-                    guardian_contact=row["guardian_contact"],
+                    current_cgpa=current_cgpa,
+                    branch=student_data["branch"],
+                    batch=student_data["batch"],
+                    enrolment_no=student_data["enrolment_no"],
+                    guardian_name=student_data["guardian_name"],
+                    guardian_contact=student_data["guardian_contact"],
                     prediction=prediction,
-                    mentor=profile  # associate student to mentor
+                    mentor=profile
                 )
 
                 inserted += 1
+
             except Exception as e:
-                # Log the error and continue with next row
-                print(f"Failed to create student record for st_id {row.get('st_id', 'unknown')}: {str(e)}")
+                print(f"Row {index} skipped (error: {str(e)})")
                 skipped += 1
                 continue
 
         return Response({
-            "message": "Data uploaded successfully. Previous data cleared and replaced with new data.",
+            "message": "Upload complete. Previous data cleared.",
             "inserted": inserted,
-            "skipped (duplicates)": skipped,
-        }, status=status.HTTP_201_CREATED)
+            "skipped": skipped,
+        }, status=201)
+
 
         # Global exception handling (in case something goes wrong)
         # except Exception as e:
