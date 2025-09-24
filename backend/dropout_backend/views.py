@@ -587,13 +587,8 @@ class SendEmailView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            try:
-                student = StudentRecord.objects.get(st_id=student_id)
-            except StudentRecord.DoesNotExist:
-                return Response(
-                    {"error": "Student not found."},
-                    status=status.HTTP_404_NOT_FOUND
-                )
+            # Only fetch student assigned to the mentor profile of logged-in user
+            student = get_object_or_404(StudentRecord, st_id=student_id, mentor=request.user.profile)
 
             success = False
             try:
