@@ -18,7 +18,8 @@ export default function StudentCounseling() {
   const formatDate = (dateStr) => {
     if (!dateStr) return "-";
     // Expecting "mm/dd/yyyy"
-    const parts = dateStr.split("/");
+    const [dateOnly] = dateStr.split(",");
+    const parts = dateOnly.split("/");
     if (parts.length !== 3) return "-";
     const [dd, mm, yyyy] = parts;
     // Create Date with yyyy, mm-1 (month is zero-based), dd
