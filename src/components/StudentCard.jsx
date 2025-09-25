@@ -67,7 +67,7 @@ export default function StudentCard({ student }) {
           <strong>Name:</strong> {student.guardian_name}
         </p>
         <p>
-          <strong>Mobile:</strong> {student.guardian_contact}
+          <strong>Email ID:</strong> {student.guardian_contact}
         </p>
       </div>
     </div>
