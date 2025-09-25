@@ -185,17 +185,11 @@ SIMPLE_JWT = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'apikey'  # This is literally the string "apikey"
-EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY")
-DEFAULT_FROM_EMAIL = 'udaanbitcrew@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'udaanbitcrew@gmail.com'  # This is literally the string "apikey"
+EMAIL_HOST_PASSWORD = os.getenv("GMAIL_API_KEY")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-
-SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")  # Make sure this env var is set securely
-
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
-
-DEFAULT_FROM_EMAIL = "udaanbitcrew@gmail.com" # Must be verified in SendGrid
 

@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
 import logging
-import logging
+from django.conf import settings
 logger = logging.getLogger(__name__)
 
 def send_email(to_email, subject, message):
@@ -8,7 +8,7 @@ def send_email(to_email, subject, message):
         send_mail(
             subject,
             message,
-            'udaanbitcrew@gmail.com',
+            settings.DEFAULT_FROM_EMAIL,  # From email; None means use DEFAULT_FROM_EMAIL
             [to_email],
             fail_silently=False,
         )
