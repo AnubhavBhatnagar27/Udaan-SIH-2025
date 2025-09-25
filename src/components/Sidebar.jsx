@@ -18,7 +18,7 @@ export default function Sidebar() {
     {
       to: "/about",
       icon: <Info size={20} />,
-      label: "About Us",
+      label: "User Guide",
       download: true,
     },
   ];
