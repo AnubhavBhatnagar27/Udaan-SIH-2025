@@ -184,12 +184,14 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),               # Default is "Bearer"
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'udaanbitcrew@gmail.com'  # This is literally the string "apikey"
-EMAIL_HOST_PASSWORD = os.getenv("GMAIL_API_KEY")
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 465
+# EMAIL_USE_SSL = True
+# EMAIL_HOST_USER = 'udaanbitcrew@gmail.com'  # This is literally the string "apikey"
+# EMAIL_HOST_PASSWORD = os.getenv("GMAIL_API_KEY")
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+DEFAULT_FROM_EMAIL = 'udaanbitcrew@gmail.com'
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 
