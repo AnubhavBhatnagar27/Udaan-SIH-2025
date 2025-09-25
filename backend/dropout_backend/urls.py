@@ -13,4 +13,5 @@ urlpatterns = [
     path('api/upload/', UploadCSVView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
     path('api/send-email/', SendEmailView.as_view(), name='send-email'),
+    path('api/ping/', PingView.as_view()),
 ]

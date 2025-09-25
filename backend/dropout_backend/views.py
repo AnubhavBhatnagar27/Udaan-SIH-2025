@@ -18,6 +18,8 @@ from rest_framework import status
 from .models import StudentRecord, EmailNotification
 from .email_utils import send_email
 from datetime import datetime
+from django.utils.timezone import localtime
+
 
 # class CreateLogin(APIView):
 #     permission_classes = [AllowAny]
@@ -623,3 +625,10 @@ class SendEmailView(APIView):
         except Exception as e:
             logger.error(f"Unexpected error in SendEmailView: {e}", exc_info=True)
             return Response({"error": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+class PingView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({"message": "ping"}, status=status.HTTP_200_OK)
