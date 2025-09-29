@@ -24,6 +24,7 @@ const Layout = ({ children }) => {
 
 const App = () => {
   return (
+    <>
     <Routes>
       {/* Routes WITHOUT sidebar */}
       <Route path="/" element={<LandingPage />} />
@@ -70,8 +71,9 @@ const App = () => {
           </Layout>
         }
       />
-      <Analytics/>
     </Routes>
+    <Analytics />
+    </>
   );
 };
 
