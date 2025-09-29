@@ -10,6 +10,7 @@ import StudentProfilePage from './pages/StudentProfilePage';
 import Sidebar from './components/Sidebar';
 import Notification from './pages/Notification';
 import './App.css';
+import { Analytics } from '@vercel/analytics/react';
 
 // Reusable layout wrapper that includes Sidebar
 const Layout = ({ children }) => {
@@ -69,6 +70,7 @@ const App = () => {
           </Layout>
         }
       />
+      <Analytics/>
     </Routes>
   );
 };
