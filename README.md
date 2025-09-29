@@ -1,70 +1,147 @@
-# Getting Started with Create React App
+# Udaan-SIH-2025 - Team BitCrew
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project Overview
 
-## Available Scripts
+This repository contains the code for Team BitCrew's solution for SIH 2025 (Smart India Hackathon). Our project aims to develop an AI-powered platform for dropout prediction using machine learning techniques and a user-friendly interface. This README provides a comprehensive guide for understanding, setting up, and contributing to the project.
 
-In the project directory, you can run:
+## Key Features & Benefits
 
-### `npm start`
+*   **AI-Powered Dropout Prediction:** Utilizes machine learning models to predict student dropout rates.
+*   **User-Friendly Interface:** Provides an intuitive interface for data input and visualization of prediction results
+*   **Scalable Architecture:** Designed with scalability in mind to handle large datasets and user traffic.
+*   **Data Analysis & Insights:** Risk Analytics overview dashboard
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Prerequisites & Dependencies
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Before setting up the project, ensure you have the following installed:
 
-### `npm test`
+*   **Python:** Version 3.6 or higher.
+*   **Node.js:** Version 14 or higher.
+*   **npm:** (Usually installed with Node.js)
+*   **pip:** (Python package installer)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The following libraries are also required:
 
-### `npm run build`
+*   **JavaScript:**
+    *   React JS
+*   **Python:**
+    *   Django
+    *   scikit-learn (sklearn)
+    *   pandas
+    *   numpy
+    *   dotenv
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Installation & Setup Instructions
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Follow these steps to install and set up the project:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1.  **Clone the repository:**
 
-### `npm run eject`
+    ```bash
+    git clone [repository URL]
+    cd Udaan-SIH-2025
+    ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+2.  **Backend Setup (Python/Django):**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    a.  Navigate to the `backend` directory:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    ```bash
+    cd backend
+    ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+    b.  Create a virtual environment (recommended):
 
-## Learn More
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate  # On Linux/macOS
+    venv\Scripts\activate  # On Windows
+    ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    c.  Install the required Python packages:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+    ```bash
+    pip install -r requirements.txt #Create a requirements.txt file that contains all the python dependencies and include in backend folder.
+    ```
 
-### Code Splitting
+    d.  Apply migrations:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+    ```bash
+    python manage.py migrate
+    ```
 
-### Analyzing the Bundle Size
+    e.  Run the development server:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+    ```bash
+    python manage.py runserver
+    ```
 
-### Making a Progressive Web App
+3.  **Frontend Setup (JavaScript/React - *If Applicable*):**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+    a.  Navigate to the `frontend` directory [If you have a front end]:
 
-### Advanced Configuration
+    ```bash
+    cd frontend
+    ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+    b.  Install the required Node.js packages:
 
-### Deployment
+    ```bash
+    npm install
+    ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+    c.  Start the development server:
 
-### `npm run build` fails to minify
+    ```bash
+    npm start
+    ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+4.  **Environment Variables:**
+
+    Create a `.env` file in the root directory of the project and define the following environment variables:
+
+    ```
+    DEBUG=True
+    SECRET_KEY=your_django_secret_key
+    [Other ENV variables as needed]
+    ```
+
+## Usage Examples & API Documentation
+
+### Backend (API Endpoints):
+
+The Django backend provides the following API endpoints:
+
+*   `/`: Landing Page
+*  `/login/create/` : User Creation
+*  `/login/` : User Login
+*  `/upload/` : Upload Student Data
+*  `/students/` : Student Data API
+*  `/students/<int:st_id>/` : Individual Student Data
+*  `/students/<int:st_id>/remarks/` : Individual Student Remarks
+*  `/risk-analytis/` : Risk Analytics Overview
+*   `/mentors/`: Mentor Data
+*   `/token/refresh`: For JWT Authentication
+*  `/send-email/` : Email Sending Facility
+
+Example `POST` request to the `/login/` endpoint:
+
+```json
+{
+  "username": testuser@gmail.com ,
+  "password": testpass123
+}
+```
+
+
+## Configuration Options
+
+The project can be configured using the following settings:
+
+*   **`SECRET_KEY`:**  Django's secret key (stored in `.env`).  Ensure this is a strong, unique value for production environments.
+*   **`DEBUG`:**  Enables or disables debugging mode (stored in `.env`). Should be `False` for production.
+*   **Database Settings:** Configure the database connection in `backend/backend/settings.py`.
+*   **[Other configuration settings]**
+
+
+*   Developed by Team BitCrew2 under SIH 2025.
